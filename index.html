@@ -513,32 +513,56 @@
             // Novos campos para Nome do Curso e Datas (dentro de cada ala)
             const courseInfoDiv = document.createElement('div');
             courseInfoDiv.className = 'mb-8 p-6 bg-gray-50 rounded-lg shadow-inner';
-            courseInfoDiv.innerHTML = `
-                <label for="course-name-input-${alaId}" class="course-info-label">Nome do Curso:</label>
-                <input type="text" id="course-name-input-${alaId}" class="course-info-input" placeholder="Ex: Escola Dominical - Doutrina e Convênios">
+            alaSection.appendChild(courseInfoDiv); // ANEXA o div ao DOM primeiro
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div>
-                        <label for="start-date-input-${alaId}" class="course-info-label">Data de Início:</label>
-                        <input type="date" id="start-date-input-${alaId}" class="course-info-input">
-                    </div>
-                    <div>
-                        <label for="end-date-input-${alaId}" class="course-info-label">Data de Fim:</label>
-                        <input type="date" id="end-date-input-${alaId}" class="course-info-input">
-                    </div>
-                </div>
-            `;
-            alaSection.appendChild(courseInfoDiv); // ANEXA o div ao DOM antes de tentar preencher os valores
+            // Cria os elementos de label e input individualmente e anexa
+            const courseNameLabel = document.createElement('label');
+            courseNameLabel.htmlFor = `course-name-input-${alaId}`;
+            courseNameLabel.className = 'course-info-label';
+            courseNameLabel.textContent = 'Nome do Curso:';
+            courseInfoDiv.appendChild(courseNameLabel);
+
+            const courseNameInput = document.createElement('input');
+            courseNameInput.type = 'text';
+            courseNameInput.id = `course-name-input-${alaId}`;
+            courseNameInput.className = 'course-info-input';
+            courseNameInput.placeholder = 'Ex: Escola Dominical - Doutrina e Convênios';
+            courseInfoDiv.appendChild(courseNameInput);
+
+            const dateGridDiv = document.createElement('div');
+            dateGridDiv.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 mt-4';
+            courseInfoDiv.appendChild(dateGridDiv);
+
+            const startDateDiv = document.createElement('div');
+            const startDateLabel = document.createElement('label');
+            startDateLabel.htmlFor = `start-date-input-${alaId}`;
+            startDateLabel.className = 'course-info-label';
+            startDateLabel.textContent = 'Data de Início:';
+            startDateDiv.appendChild(startDateLabel);
+            const startDateInput = document.createElement('input');
+            startDateInput.type = 'date';
+            startDateInput.id = `start-date-input-${alaId}`;
+            startDateInput.className = 'course-info-input';
+            startDateDiv.appendChild(startDateInput);
+            dateGridDiv.appendChild(startDateDiv);
+
+            const endDateDiv = document.createElement('div');
+            const endDateLabel = document.createElement('label');
+            endDateLabel.htmlFor = `end-date-input-${alaId}`;
+            endDateLabel.className = 'course-info-label';
+            endDateLabel.textContent = 'Data de Fim:';
+            endDateDiv.appendChild(endDateLabel);
+            const endDateInput = document.createElement('input');
+            endDateInput.type = 'date';
+            endDateInput.id = `end-date-input-${alaId}`;
+            endDateInput.className = 'course-info-input';
+            endDateDiv.appendChild(endDateInput);
+            dateGridDiv.appendChild(endDateDiv);
 
             // Carrega os detalhes do curso para esta ala específica
             const alaCourseDetails = await loadAlaCourseDetails(alaId);
             
-            // Obtém referências aos inputs diretamente do courseInfoDiv
-            const courseNameInput = courseInfoDiv.querySelector(`#course-name-input-${alaId}`);
-            const startDateInput = courseInfoDiv.querySelector(`#start-date-input-${alaId}`);
-            const endDateInput = courseInfoDiv.querySelector(`#end-date-input-${alaId}`);
-
-            // Preenche os valores dos inputs
+            // Preenche os valores dos inputs (agora que as referências são diretas)
             courseNameInput.value = alaCourseDetails.courseName || '';
             startDateInput.value = alaCourseDetails.startDate || '';
             endDateInput.value = alaCourseDetails.endDate || '';
