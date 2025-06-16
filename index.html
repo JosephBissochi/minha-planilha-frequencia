@@ -3,526 +3,415 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planilha de Frequência das Alas</title>
+    <title>Planilha de Frequência de Alas</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Firebase SDKs -->
-    <script type="module">
-        // Importa as funções necessárias do Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Variáveis globais para as instâncias do Firebase e estado de autenticação
-        let app;
-        let db;
-        let auth;
-        let userId; // Armazena o ID do usuário autenticado
-        let isAuthReady = false; // Flag para indicar se a autenticação está pronta
-
-        // Expõe as funções do Firebase no objeto global 'window' para que o script principal possa acessá-las.
-        // Isso é necessário devido à forma como os módulos ES são tratados em scripts 'type="module"' e 'defer'.
-        window.firebase = {
-            initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged,
-            getFirestore, doc, setDoc, getDoc, collection, getDocs
-        };
-        window.isAuthReady = false; // Inicializa a flag de autenticação para o script principal
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilos base do corpo e contêiner principal */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
         }
-        .container {
-            max-width: 1200px;
+        /* Custom scrollbar for better aesthetics */
+        .table-container::-webkit-scrollbar {
+            height: 8px;
         }
-
-        /* Estilo responsivo para tabelas: adiciona rolagem horizontal se o conteúdo for muito largo */
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch; /* Melhora a rolagem em dispositivos iOS */
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
         }
-
-        /* Estilo da tabela */
-        table {
-            width: 100%;
-            min-width: 900px; /* Garante que a tabela tenha uma largura mínima para legibilidade */
-            border-collapse: collapse;
-            margin-top: 1rem;
-            margin-bottom: 2rem;
+        .table-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
         }
-        th, td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        th {
-            background-color: #4c51bf;
-            color: white;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.875rem;
-            white-space: nowrap; /* Impede quebras de linha nos cabeçalhos */
-        }
-        td {
-            background-color: #ffffff;
-            color: #4a5568;
-            font-size: 0.95rem;
-        }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        tr:hover td {
-            background-color: #f7fafc;
-        }
-
-        /* Seções individuais das alas */
-        .ala-section {
-            background-color: #ffffff;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* Sombra mais pronunciada */
-            margin-bottom: 2rem;
-        }
-        .ala-title {
-            color: #4c51bf;
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        /* Campo de entrada para o nome do participante */
-        .participant-name-input {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #cbd5e0;
-            border-radius: 0.375rem;
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-            font-size: 0.95rem;
-            color: #4a5568;
-        }
-
-        /* Campos de entrada para curso e datas */
-        .course-info-input {
-            width: 100%;
-            padding: 0.6rem;
-            border: 1px solid #cbd5e0;
-            border-radius: 0.375rem;
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-            font-size: 1rem;
-            color: #4a5568;
-            margin-top: 0.5rem;
-        }
-        .course-info-label {
-            display: block;
-            margin-top: 1rem;
-            margin-bottom: 0.25rem;
-            font-weight: 600;
-            color: #4a5568;
-            font-size: 0.9rem;
-        }
-
-
-        /* Checkbox de presença */
-        .attendance-checkbox {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-
-        /* Indicador de carregamento (spinner) */
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4c51bf;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .welcome-section {
-            background-color: #e0f2f7;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            text-align: center;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
-        }
-        .welcome-section h2 {
-            font-size: 2rem;
-            color: #2c5282;
-            margin-bottom: 1rem;
-        }
-        .welcome-section p {
-            font-size: 1.1rem;
-            color: #4a5568;
-            margin-bottom: 1.5rem;
-        }
-        .welcome-section .link-list {
-            list-style: none;
-            padding: 0;
-        }
-        .welcome-section .link-list li {
-            margin-bottom: 0.75rem;
-        }
-        .welcome-section .link-list a {
-            display: inline-block;
-            background-color: #667eea;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-        }
-        .welcome-section .link-list a:hover {
-            background-color: #5a67d8;
-        }
-
-        /* Estilos específicos para o resumo do admin */
-        .admin-summary-section {
-            background-color: #f7fafc; /* Cor de fundo mais clara para o resumo */
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 2rem;
-        }
-        .admin-summary-section h3 {
-            color: #2c5282;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            text-align: center;
-        }
-        .admin-summary-section .detail-item {
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-            color: #4a5568;
-        }
-        .admin-summary-section .participant-summary-list {
-            list-style: disc;
-            padding-left: 1.5rem;
-            margin-top: 1rem;
-            max-height: 200px;
-            overflow-y: auto;
-            border-top: 1px dashed #e2e8f0;
-            padding-top: 1rem;
-        }
-        .admin-summary-section .participant-summary-list li {
-            margin-bottom: 0.25rem;
-            color: #2d3748;
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
     </style>
 </head>
-<body class="p-4 sm:p-6 md:p-8">
-    <div class="container mx-auto p-4 bg-white rounded-lg shadow-xl my-8">
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-center text-indigo-700 mb-8 mt-4">
-            Planilha de Frequência - Alas de São Paulo
-        </h1>
-        <p class="text-lg text-gray-600 text-center mb-4">
-            Acompanhe a frequência dos participantes de cada ala durante 12 semanas.
-            Marque a caixa para registrar a presença de cada participante.
-            Você pode editar os nomes dos participantes diretamente na tabela.
-        </p>
-        <p id="user-id-display" class="text-sm text-gray-500 text-center mb-8">
-            Carregando ID do usuário...
-        </p>
+<body class="bg-gray-50 text-gray-800">
 
-        <div id="main-content">
-            <!-- Conteúdo será carregado aqui dinamicamente -->
-        </div>
+    <div id="app-container" class="container mx-auto p-4 md:p-8">
+        <!-- O conteúdo será renderizado aqui pelo JavaScript -->
     </div>
 
+    <!-- Firebase SDKs -->
     <script type="module">
-        // Constants for configuration
-        const ALAS = [
-            "Ala Aracati (SP)", "Ala Chácara Santana", "Ala Figueira Grande",
-            "Ala Guarapiranga", "Ala Horizonte Azul", "Ala Jardim Capela",
-            "Ala Jardim Jacira", "Ala Jardim Ângela", "Ala Ranieri",
-            "Ala Riviera Paulista"
+        // Importações do Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // --- CONFIGURAÇÃO ---
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-alas-app';
+
+        // Lista de Alas
+        const alas = [
+            "Ala Aracati (SP)", "Ala Chácara Santana", "Ala Interlagos", "Ala Jardim das Acácias",
+            "Ala Jardim Ubirajara", "Ala Jurubatuba", "Ala Sabará", "Ala Veleiros",
+            "Ala Vila São José", "Ala Grajaú"
         ];
         const NUM_PARTICIPANTS = 20;
-        const NUM_SEMANAS = 12;
+        const NUM_WEEKS = 12;
 
-        // Firebase instances (will be initialized after authentication)
-        let app;
-        let db;
-        let auth;
-        let userId;
+        // --- INICIALIZAÇÃO DO FIREBASE ---
+        let app, db, auth;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } catch (e) {
+            console.error("Erro ao inicializar o Firebase. Verifique a configuração.", e);
+            document.getElementById('app-container').innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">Erro de Configuração!</strong>
+                <span class="block sm:inline">Não foi possível conectar ao Firebase. Verifique as variáveis de ambiente.</span>
+            </div>`;
+        }
+        
+        // --- FUNÇÕES AUXILIARES ---
+        const slugify = (text) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 
-        /**
-         * Inicializa o Firebase e lida com a autenticação do usuário.
-         * Garante que o userId esteja disponível antes de interagir com o Firestore.
-         */
-        async function initializeFirebaseAndAuth() {
-            try {
-                // As variáveis __app_id, __firebase_config, __initial_auth_token são fornecidas pelo ambiente Canvas
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        // --- LÓGICA PRINCIPAL ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Usuário está logado anonimamente
+                console.log("Usuário autenticado:", user.uid);
+                main();
+            } else {
+                // Tenta fazer o login anônimo
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                         await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                         await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("Erro na autenticação anônima:", error);
+                }
+            }
+        });
 
-                app = window.firebase.initializeApp(firebaseConfig);
-                db = window.firebase.getFirestore(app);
-                auth = window.firebase.getAuth(app);
+        function main() {
+            const params = new URLSearchParams(window.location.search);
+            const alaParam = params.get('ala');
+            const modeParam = params.get('mode');
 
-                return new Promise(resolve => {
-                    window.firebase.onAuthStateChanged(auth, async (user) => {
-                        if (user) {
-                            userId = user.uid;
-                            document.getElementById('user-id-display').textContent = `Seu ID de Usuário: ${userId}`;
-                            window.isAuthReady = true; // Sinaliza que a autenticação está pronta
-                            resolve();
-                        } else {
-                            try {
-                                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                                    await window.firebase.signInWithCustomToken(auth, __initial_auth_token);
-                                } else {
-                                    await window.firebase.signInAnonymously(auth);
-                                }
-                                // onAuthStateChanged será acionado novamente com o usuário autenticado
-                            } catch (error) {
-                                console.error("Erro de autenticação:", error);
-                                document.getElementById('user-id-display').textContent = `Erro de autenticação: ${error.message}`;
-                                userId = crypto.randomUUID(); // Fallback para um ID aleatório se a autenticação falhar
-                                window.isAuthReady = true;
-                                resolve();
-                            }
-                        }
-                    });
-                });
-            } catch (e) {
-                console.error("Erro ao inicializar o Firebase:", e);
-                document.getElementById('user-id-display').textContent = 'Erro ao inicializar o Firebase.';
+            if (modeParam === 'admin') {
+                renderAdminView();
+            } else if (alaParam) {
+                const alaName = alas.find(a => slugify(a) === alaParam);
+                if (alaName) {
+                    renderAlaView(alaName);
+                } else {
+                    renderNotFound();
+                }
+            } else {
+                renderWelcomePage();
             }
         }
 
-        /**
-         * Salva o estado de frequência e o nome de um participante no Firestore.
-         * Agora salva na coleção 'public_alas_data'.
-         * @param {string} alaId - ID sanitizado da ala.
-         * @param {string} participantId - ID do participante.
-         * @param {Object} dataToSave - Objeto contendo o nome e o array de frequência. Ex: { name: "Nome", attendance: [true, false, ...] }
-         */
-        async function saveParticipantData(alaId, participantId, dataToSave) {
-            if (!window.isAuthReady || !userId) {
-                console.warn("Autenticação não pronta ou userId ausente. Não é possível salvar dados.");
-                return;
-            }
-            try {
-                const participantDocRef = window.firebase.doc(db, `artifacts/${__app_id}/public_alas_data/${alaId}/participants`, participantId);
-                await window.firebase.setDoc(participantDocRef, dataToSave, { merge: true });
+        // --- RENDERIZAÇÃO DAS VIEWS ---
+
+        function renderWelcomePage() {
+            const container = document.getElementById('app-container');
+            let linksHtml = alas.map(ala => {
+                const alaSlug = slugify(ala);
+                return `<li><a href="?ala=${alaSlug}" class="text-blue-600 hover:text-blue-800 hover:underline">${ala}</a></li>`;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="bg-white p-8 rounded-lg shadow-md text-center">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-4">Planilha de Frequência</h1>
+                    <p class="text-gray-600 mb-8">Selecione uma ala para ver a planilha ou acesse o modo de administração.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                        <div>
+                            <h2 class="text-xl font-semibold mb-4 border-b pb-2">Acesso por Ala</h2>
+                            <ul class="space-y-2">
+                                ${linksHtml}
+                            </ul>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold mb-4 border-b pb-2">Administração</h2>
+                             <a href="?mode=admin" class="text-blue-600 hover:text-blue-800 hover:underline">Ver painel de Admin</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function renderAlaView(alaName) {
+            const container = document.getElementById('app-container');
+            const alaId = slugify(alaName);
+            
+            // Estrutura principal
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                     <button onclick="window.location.href='${window.location.pathname}'" class="mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        &larr; Voltar
+                    </button>
+                    <h1 class="text-3xl font-bold mb-2">${alaName}</h1>
+                    <div id="course-info" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-gray-100 rounded-lg"></div>
+                    <div id="table-container" class="table-container overflow-x-auto"></div>
+                    <div id="loading" class="text-center p-8">Carregando dados...</div>
+                </div>
+            `;
+
+            renderCourseInfo(alaId);
+            renderFrequencyTable(alaName);
+
+            // Carregar dados
+            const data = await loadAlaData(alaId);
+            document.getElementById('loading').style.display = 'none';
+
+            // Preencher dados do curso
+            const courseInfo = data.courseInfo || {};
+            document.getElementById('courseName').value = courseInfo.name || '';
+            document.getElementById('startDate').value = courseInfo.startDate || '';
+            document.getElementById('endDate').value = courseInfo.endDate || '';
+
+            // Preencher dados dos participantes
+            for (let i = 0; i < NUM_PARTICIPANTS; i++) {
+                const participantData = data.participants[i] || { name: '', attendance: Array(NUM_WEEKS).fill(false) };
+                const nameInput = document.getElementById(`participant-name-${i}`);
+                if(nameInput) nameInput.value = participantData.name || '';
                 
-                // Atualiza a porcentagem de frequência na linha do participante instantaneamente
-                const percentageSpan = document.getElementById(`percentage-${alaId}-${participantId}`);
-                if (percentageSpan) {
-                    percentageSpan.textContent = calculateAttendancePercentage(dataToSave.attendance, NUM_SEMANAS);
+                const attendance = participantData.attendance || Array(NUM_WEEKS).fill(false);
+                attendance.forEach((attended, weekIndex) => {
+                    const checkbox = document.getElementById(`week-${i}-${weekIndex}`);
+                    if(checkbox) checkbox.checked = attended;
+                });
+                updatePercentage(i);
+            }
+        }
+        
+        function renderCourseInfo(alaId) {
+            const courseContainer = document.getElementById('course-info');
+            courseContainer.innerHTML = `
+                <div>
+                    <label for="courseName" class="block text-sm font-medium text-gray-700">Nome do Curso</label>
+                    <input type="text" id="courseName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2" placeholder="Ex: Doutrina e Convênios">
+                </div>
+                <div>
+                    <label for="startDate" class="block text-sm font-medium text-gray-700">Data de Início</label>
+                    <input type="date" id="startDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+                </div>
+                <div>
+                    <label for="endDate" class="block text-sm font-medium text-gray-700">Data de Fim</label>
+                    <input type="date" id="endDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+                </div>
+            `;
+            
+            // Adicionar event listeners para salvar ao perder o foco
+            document.getElementById('courseName').addEventListener('blur', (e) => saveCourseInfo(alaId));
+            document.getElementById('startDate').addEventListener('change', (e) => saveCourseInfo(alaId));
+            document.getElementById('endDate').addEventListener('change', (e) => saveCourseInfo(alaId));
+        }
+
+        function renderFrequencyTable(alaName) {
+            const tableContainer = document.getElementById('table-container');
+            let tableHeader = '<tr><th class="sticky left-0 bg-gray-100 px-4 py-2 text-left text-sm font-semibold text-gray-900 z-10">Participante</th>';
+            for (let i = 1; i <= NUM_WEEKS; i++) {
+                tableHeader += `<th class="px-6 py-3 text-center text-sm font-semibold text-gray-900">S${i}</th>`;
+            }
+            tableHeader += '<th class="px-4 py-2 text-center text-sm font-semibold text-gray-900">Freq. %</th></tr>';
+
+            let tableBody = '';
+            for (let i = 0; i < NUM_PARTICIPANTS; i++) {
+                tableBody += `<tr>
+                    <td class="sticky left-0 bg-white px-2 py-1 z-10">
+                        <input type="text" id="participant-name-${i}" placeholder="Participante ${i + 1}" 
+                               class="w-48 p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    </td>`;
+                for (let j = 0; j < NUM_WEEKS; j++) {
+                    tableBody += `<td class="text-center px-6 py-4">
+                                    <input type="checkbox" id="week-${i}-${j}" 
+                                           class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                 </td>`;
                 }
-            } catch (e) {
-                console.error("Erro ao salvar dados do participante:", e);
+                tableBody += `<td id="percentage-${i}" class="text-center font-medium">0.00%</td></tr>`;
             }
-        }
 
-        /**
-         * Carrega o estado de frequência e o nome de um participante do Firestore.
-         * Agora carrega da coleção 'public_alas_data'.
-         * @param {string} alaId - ID sanitizado da ala.
-         * @param {string} participantId - ID do participante.
-         * @returns {Promise<Object>} - Objeto contendo o nome e o array de frequência, ou um objeto padrão se não houver dados.
-         */
-        async function loadParticipantData(alaId, participantId) {
-            if (!window.isAuthReady || !userId) {
-                console.warn("Autenticação não pronta ou userId ausente. Não é possível carregar dados.");
-                return { name: `Participante ${parseInt(participantId.replace('participante-', ''))}`, attendance: Array(NUM_SEMANAS).fill(false) };
-            }
-            try {
-                const participantDocRef = window.firebase.doc(db, `artifacts/${__app_id}/public_alas_data/${alaId}/participants`, participantId);
-                const docSnap = await window.firebase.getDoc(participantDocRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    return {
-                        name: data.name || `Participante ${parseInt(participantId.replace('participante-', ''))}`,
-                        attendance: data.attendance || Array(NUM_SEMANAS).fill(false)
-                    };
+            tableContainer.innerHTML = `<table class="min-w-full divide-y divide-gray-300">${tableHeader}${tableBody}</table>`;
+            
+            // Adicionar Event Listeners
+            const alaId = slugify(alaName);
+            for (let i = 0; i < NUM_PARTICIPANTS; i++) {
+                document.getElementById(`participant-name-${i}`).addEventListener('blur', (e) => saveParticipantName(alaId, i, e.target.value));
+                for (let j = 0; j < NUM_WEEKS; j++) {
+                    document.getElementById(`week-${i}-${j}`).addEventListener('change', (e) => {
+                        saveAttendance(alaId, i, j, e.target.checked);
+                        updatePercentage(i);
+                    });
                 }
-                return { name: `Participante ${parseInt(participantId.replace('participante-', ''))}`, attendance: Array(NUM_SEMANAS).fill(false) };
-            } catch (e) {
-                console.error("Erro ao carregar dados do participante:", e);
-                return { name: `Participante ${parseInt(participantId.replace('participante-', ''))}`, attendance: Array(NUM_SEMANAS).fill(false) };
             }
         }
+        
+        async function renderAdminView() {
+            const container = document.getElementById('app-container');
+            container.innerHTML = `
+                 <div class="bg-white p-6 rounded-lg shadow-md">
+                    <button onclick="window.location.href='${window.location.pathname}'" class="mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        &larr; Voltar
+                    </button>
+                    <h1 class="text-3xl font-bold mb-6">Painel de Administração</h1>
+                    <div id="admin-content" class="space-y-6">
+                        <p>Carregando dados das alas...</p>
+                    </div>
+                </div>
+            `;
 
-        /**
-         * Calcula a porcentagem de frequência de um participante.
-         * @param {Array<boolean>} attendanceArray - Array booleano de presença.
-         * @param {number} totalWeeks - Número total de semanas.
-         * @returns {string} - Porcentagem formatada (ex: "75.00%").
-         */
-        function calculateAttendancePercentage(attendanceArray, totalWeeks) {
-            if (totalWeeks === 0) return "0.00%";
-            const presentCount = attendanceArray.filter(isPresent => isPresent).length;
-            const percentage = (presentCount / totalWeeks) * 100;
-            return percentage.toFixed(2) + "%";
-        }
+            const adminContent = document.getElementById('admin-content');
+            adminContent.innerHTML = ''; // Limpa a mensagem de carregamento
 
-        /**
-         * Salva as configurações de curso e datas para uma ala específica no Firestore.
-         * Agora salva na coleção 'public_alas_data'.
-         * @param {string} alaId - ID sanitizado da ala.
-         * @param {Object} courseDetails - Objeto contendo nome do curso, data de início e data de fim.
-         */
-        async function saveAlaCourseDetails(alaId, courseDetails) {
-            if (!window.isAuthReady || !userId) {
-                console.warn("Autenticação não pronta ou userId ausente. Não é possível salvar detalhes do curso da ala.");
-                return;
-            }
-            try {
-                const alaDetailsDocRef = window.firebase.doc(db, `artifacts/${__app_id}/public_alas_data/${alaId}/details`, 'course_info');
-                await window.firebase.setDoc(alaDetailsDocRef, {
-                    courseName: courseDetails.courseName,
-                    startDate: courseDetails.startDate,
-                    endDate: courseDetails.endDate
-                }, { merge: true });
-                // console.log(`Detalhes do curso para ala ${alaId} salvos com sucesso.`);
-            } catch (e) {
-                console.error(`Erro ao salvar detalhes do curso para ala ${alaId}:`, e);
-            }
-        }
+            for (const alaName of alas) {
+                const alaId = slugify(alaName);
+                const data = await loadAlaData(alaId);
 
-        /**
-         * Carrega as configurações de curso e datas para uma ala específica do Firestore.
-         * Agora carrega da coleção 'public_alas_data'.
-         * @param {string} alaId - ID sanitizado da ala.
-         * @returns {Promise<Object>} - Objeto contendo nome do curso, data de início e data de fim, ou um objeto vazio se não houver dados.
-         */
-        async function loadAlaCourseDetails(alaId) {
-            if (!window.isAuthReady || !userId) {
-                console.warn("Autenticação não pronta ou userId ausente. Não é possível carregar detalhes do curso da ala.");
-                return {};
-            }
-            try {
-                const alaDetailsDocRef = window.firebase.doc(db, `artifacts/${__app_id}/public_alas_data/${alaId}/details`, 'course_info');
-                const docSnap = await window.firebase.getDoc(alaDetailsDocRef);
-                if (docSnap.exists()) {
-                    return docSnap.data();
+                const courseInfo = data.courseInfo || {};
+                const participants = data.participants || {};
+
+                let participantsHtml = '';
+                for (let i=0; i < NUM_PARTICIPANTS; i++) {
+                    const pData = participants[i] || { name: '', attendance: [] };
+                    if (pData.name) { // Só mostra participantes com nome
+                        const attendedCount = (pData.attendance || []).filter(Boolean).length;
+                        const percentage = (attendedCount / NUM_WEEKS * 100).toFixed(2);
+                        participantsHtml += `<li class="flex justify-between">
+                            <span>${pData.name}</span>
+                            <span class="font-mono">${percentage}%</span>
+                        </li>`;
+                    }
                 }
-                return {};
-            } catch (e) {
-                console.error(`Erro ao carregar detalhes do curso para ala ${alaId}:`, e);
-                return {};
-            }
-        }
-
-        /**
-         * Cria e popula uma linha para um participante na tabela de frequência.
-         * @param {string} alaId - ID sanitizado da ala.
-         * @param {number} participantNum - Número do participante (1-20).
-         * @returns {HTMLTableRowElement} A linha da tabela HTML.
-         */
-        async function createParticipantRow(alaId, participantNum) {
-            const participantId = `participante-${participantNum}`;
-            const participantRow = document.createElement('tr');
-            const tdNome = document.createElement('td');
-            tdNome.className = 'py-4 px-6 whitespace-nowrap';
-            participantRow.appendChild(tdNome);
-
-            // Carrega os dados do participante (nome e frequência)
-            const data = await loadParticipantData(alaId, participantId);
-            let currentName = data.name;
-            let attendanceData = data.attendance;
-            const defaultParticipantName = `Participante ${participantNum}`;
-
-            // Input para o nome do participante (editável)
-            const nameInput = document.createElement('input');
-            nameInput.type = 'text';
-            nameInput.className = 'participant-name-input';
-            nameInput.value = currentName === defaultParticipantName ? '' : currentName;
-            nameInput.placeholder = defaultParticipantName;
-            tdNome.appendChild(nameInput);
-
-            // Adiciona evento para salvar o nome ao sair do foco
-            nameInput.addEventListener('blur', () => {
-                const newName = nameInput.value.trim();
-                const nameToSave = newName === '' ? defaultParticipantName : newName;
-
-                if (nameToSave !== currentName) {
-                    currentName = nameToSave;
-                    saveParticipantData(alaId, participantId, { name: currentName, attendance: attendanceData });
+                
+                if(!participantsHtml) {
+                    participantsHtml = '<li class="text-gray-500">Nenhum participante nomeado.</li>'
                 }
-            });
 
-            // Cria células para os checkboxes de frequência
-            for (let j = 0; j < NUM_SEMANAS; j++) {
-                const tdCheckbox = document.createElement('td');
-                tdCheckbox.className = 'py-4 px-6 whitespace-nowrap';
-                const checkboxId = `${alaId}-${participantId}-semana-${j + 1}`;
-                tdCheckbox.innerHTML = `
-                    <div class="attendance-checkbox">
-                        <input type="checkbox"
-                               id="${checkboxId}"
-                               name="${checkboxId}"
-                               class="form-checkbox h-5 w-5 text-indigo-600 rounded-md focus:ring-indigo-500"
-                               ${attendanceData[j] ? 'checked' : ''}>
+                const alaHtml = `
+                    <div class="p-4 border rounded-lg bg-gray-50">
+                        <h2 class="text-xl font-semibold">${alaName}</h2>
+                        <div class="mt-2 text-sm text-gray-600">
+                            <p><strong>Curso:</strong> ${courseInfo.name || 'Não definido'}</p>
+                            <p><strong>Início:</strong> ${courseInfo.startDate || 'N/D'} | <strong>Fim:</strong> ${courseInfo.endDate || 'N/D'}</p>
+                        </div>
+                        <h3 class="font-semibold mt-4 mb-2">Frequência dos Participantes:</h3>
+                        <ul class="space-y-1 text-sm list-disc list-inside">
+                           ${participantsHtml}
+                        </ul>
                     </div>
                 `;
-                participantRow.appendChild(tdCheckbox);
-
-                // Adiciona o evento de mudança para salvar a frequência no Firestore
-                const checkbox = tdCheckbox.querySelector(`#${checkboxId}`);
-                checkbox.addEventListener('change', () => {
-                    attendanceData[j] = checkbox.checked;
-                    saveParticipantData(alaId, participantId, { name: currentName, attendance: attendanceData });
-                });
+                adminContent.innerHTML += alaHtml;
             }
-
-            // Adiciona a célula para a porcentagem de frequência
-            const tdPercentage = document.createElement('td');
-            tdPercentage.className = 'py-4 px-6 whitespace-nowrap font-semibold';
-            const percentageSpan = document.createElement('span');
-            percentageSpan.id = `percentage-${alaId}-${participantId}`; // ID para atualização dinâmica
-            percentageSpan.textContent = calculateAttendancePercentage(attendanceData, NUM_SEMANAS);
-            tdPercentage.appendChild(percentageSpan);
-            participantRow.appendChild(tdPercentage);
-
-            return participantRow;
         }
 
-        /**
-         * Cria toda a seção HTML para uma ala específica, incluindo a tabela de frequência
-         * e os campos de informação do curso.
-         * @param {string} alaName - O nome da ala.
-         * @returns {HTMLElement} A seção da ala completa.
-         */
-        async function createAlaSectionElement(alaName) {
-            const alaId = alaName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase(); // Sanitiza o nome da ala para usar como ID
+        function renderNotFound() {
+             document.getElementById('app-container').innerHTML = `
+                <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative text-center" role="alert">
+                    <strong class="font-bold">Ala não encontrada!</strong>
+                    <p class="block sm:inline">A ala que você está tentando acessar não existe.</p>
+                    <p><a href="${window.location.pathname}" class="font-bold hover:underline">Voltar para a página inicial</a></p>
+                </div>`;
+        }
 
-            const alaSection = document.createElement('div');
-            alaSection.className = 'ala-section mb-12';
+        // --- FUNÇÕES DE DADOS (FIRESTORE) ---
 
-            const alaTitle = document.createElement('h2');
-            alaTitle.className = 'ala-title mb-6 pb-2 border-b-2 border-indigo-400';
-            alaTitle.textContent = alaName;
-            alaSection.appendChild(alaTitle);
+        async function loadAlaData(alaId) {
+            const docRef = doc(db, `artifacts/${appId}/public_alas_data/${alaId}`);
+            try {
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    console.log("Dados carregados para:", alaId);
+                    return docSnap.data();
+                } else {
+                    console.log("Nenhum documento encontrado para:", alaId);
+                    // Retorna uma estrutura padrão se não houver dados
+                    return { 
+                        courseInfo: { name: '', startDate: '', endDate: ''},
+                        participants: {} 
+                    };
+                }
+            } catch (error) {
+                console.error("Erro ao carregar dados: ", error);
+                return { courseInfo: {}, participants: {} };
+            }
+        }
 
-            // Novos campos para Nome do Curso e Datas (dentro de cada ala)
-            const courseInfoDiv = document.createElement('div');
-            courseInfoDiv.className = 'mb-8 p-6 bg-gray-50 rounded-lg shadow-inner';
-            alaSection.appendChild(courseInfoDiv); // ANEXA o div ao DOM primeiro
+        async function saveParticipantName(alaId, participantIndex, name) {
+            const docRef = doc(db, `artifacts/${appId}/public_alas_data/${alaId}`);
+            try {
+                const docSnap = await getDoc(docRef);
+                const data = docSnap.exists() ? docSnap.data() : { participants: {}, courseInfo: {} };
 
-            // Cria os elementos de label e input individualmente e anexa
-            const courseNameLabel = document.createElement('label');
-            courseNameLabel.htmlFor = `course-name-input-${alaId}`;
-            courseNameLabel.className = 'course-info-label';
-            courseNameLabel.textContent = 'Nome do Curso:';
-            courseInfoDiv.appendChild(courseNameLabel);
+                if (!data.participants) data.participants = {};
+                if (!data.participants[participantIndex]) {
+                    data.participants[participantIndex] = { name: '', attendance: Array(NUM_WEEKS).fill(false) };
+                }
+                
+                data.participants[participantIndex].name = name;
+                
+                await setDoc(docRef, data);
+                console.log(`Nome do participante ${participantIndex} salvo para ${alaId}`);
+            } catch (error) {
+                console.error("Erro ao salvar nome: ", error);
+            }
+        }
 
-            const courseNameInput = document.createElement('input');
-            courseNameInput.type = 'text';
-            courseNameInput.id = `course-name-input-${alaId}`;
-            courseNameInput.className 
+        async function saveAttendance(alaId, participantIndex, weekIndex, isChecked) {
+            const docRef = doc(db, `artifacts/${appId}/public_alas_data/${alaId}`);
+            try {
+                const docSnap = await getDoc(docRef);
+                const data = docSnap.exists() ? docSnap.data() : { participants: {}, courseInfo: {} };
+
+                if (!data.participants) data.participants = {};
+                if (!data.participants[participantIndex]) {
+                    data.participants[participantIndex] = { name: '', attendance: Array(NUM_WEEKS).fill(false) };
+                }
+                
+                if (!Array.isArray(data.participants[participantIndex].attendance) || data.participants[participantIndex].attendance.length !== NUM_WEEKS) {
+                    data.participants[participantIndex].attendance = Array(NUM_WEEKS).fill(false);
+                }
+                
+                data.participants[participantIndex].attendance[weekIndex] = isChecked;
+
+                await setDoc(docRef, data);
+                console.log(`Frequência da semana ${weekIndex} salva para o participante ${participantIndex} em ${alaId}`);
+            } catch (error) {
+                console.error("Erro ao salvar frequência: ", error);
+            }
+        }
+        
+        async function saveCourseInfo(alaId) {
+             const name = document.getElementById('courseName').value;
+             const startDate = document.getElementById('startDate').value;
+             const endDate = document.getElementById('endDate').value;
+             const courseInfo = { name, startDate, endDate };
+
+             const docRef = doc(db, `artifacts/${appId}/public_alas_data/${alaId}`);
+             try {
+                const docSnap = await getDoc(docRef);
+                const data = docSnap.exists() ? docSnap.data() : { participants: {}, courseInfo: {} };
+                data.courseInfo = courseInfo;
+                await setDoc(docRef, data);
+                console.log(`Informações do curso salvas para ${alaId}`);
+             } catch(error) {
+                 console.error("Erro ao salvar informações do curso: ", error);
+             }
+        }
+
+        // --- FUNÇÕES DE UI ---
+
+        function updatePercentage(participantIndex) {
+            let attendedCount = 0;
+            for (let i = 0; i < NUM_WEEKS; i++) {
+                const checkbox = document.getElementById(`week-${participantIndex}-${i}`);
+                if (checkbox && checkbox.checked) {
+                    attendedCount++;
+                }
+            }
+            const percentage = (attendedCount / NUM_WEEKS * 100).toFixed(2);
+            const percentageEl = document.getElementById(`percentage-${participantIndex}`);
+            if(percentageEl) percentageEl.textContent = `${percentage}%`;
+        }
+
+    </script>
+</body>
+</html>
