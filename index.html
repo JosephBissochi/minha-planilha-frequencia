@@ -186,6 +186,40 @@
         .welcome-section .link-list a:hover {
             background-color: #5a67d8;
         }
+
+        /* Estilos específicos para o resumo do admin */
+        .admin-summary-section {
+            background-color: #f7fafc; /* Cor de fundo mais clara para o resumo */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        .admin-summary-section h3 {
+            color: #2c5282;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+        .admin-summary-section .detail-item {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            color: #4a5568;
+        }
+        .admin-summary-section .participant-summary-list {
+            list-style: disc;
+            padding-left: 1.5rem;
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+            border-top: 1px dashed #e2e8f0;
+            padding-top: 1rem;
+        }
+        .admin-summary-section .participant-summary-list li {
+            margin-bottom: 0.25rem;
+            color: #2d3748;
+        }
     </style>
 </head>
 <body class="p-4 sm:p-6 md:p-8">
@@ -569,6 +603,67 @@
         }
 
         /**
+         * Cria um elemento de resumo para o modo administrador, exibindo os detalhes do curso e a frequência dos participantes.
+         * @param {string} alaName - O nome da ala.
+         * @returns {HTMLElement} O elemento HTML com o resumo da ala para o admin.
+         */
+        async function createAlaAdminSummaryElement(alaName) {
+            const alaId = alaName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase(); // Sanitiza o nome da ala para usar como ID
+
+            const adminSummarySection = document.createElement('div');
+            adminSummarySection.className = 'admin-summary-section mb-12';
+
+            const alaTitle = document.createElement('h3');
+            alaTitle.textContent = `Resumo da Ala: ${alaName}`;
+            adminSummarySection.appendChild(alaTitle);
+
+            // Carrega os detalhes do curso para esta ala específica
+            const alaCourseDetails = await loadAlaCourseDetails(alaId);
+            
+            // Exibe os detalhes do curso
+            const courseDetailsDiv = document.createElement('div');
+            courseDetailsDiv.className = 'text-left mb-4';
+            courseDetailsDiv.innerHTML = `
+                <p class="detail-item"><strong>Curso:</strong> ${alaCourseDetails.courseName || 'Não Informado'}</p>
+                <p class="detail-item"><strong>Início:</strong> ${alaCourseDetails.startDate || 'Não Informado'}</p>
+                <p class="detail-item"><strong>Fim:</strong> ${alaCourseDetails.endDate || 'Não Informado'}</p>
+            `;
+            adminSummarySection.appendChild(courseDetailsDiv);
+
+            // Adiciona um spinner enquanto os participantes são carregados
+            const participantsLoadingDiv = document.createElement('div');
+            participantsLoadingDiv.innerHTML = '<div class="loading-spinner"></div><p class="text-center text-gray-500 mt-2">Carregando participantes...</p>';
+            adminSummarySection.appendChild(participantsLoadingDiv);
+
+            // Carrega e exibe o resumo dos participantes
+            const participantsColRef = window.firebase.collection(db, `artifacts/${__app_id}/public_alas_data/${alaId}/participants`);
+            const querySnapshot = await window.firebase.getDocs(participantsColRef);
+            
+            participantsLoadingDiv.innerHTML = ''; // Remove o spinner
+            
+            const participantSummaryList = document.createElement('ul');
+            participantSummaryList.className = 'participant-summary-list';
+
+            if (querySnapshot.empty) {
+                participantSummaryList.innerHTML = '<li>Nenhum participante encontrado para esta ala.</li>';
+            } else {
+                querySnapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const participantName = data.name || docSnap.id.replace('participante-', 'Participante ');
+                    const attendance = data.attendance || Array(NUM_SEMANAS).fill(false);
+                    const percentage = calculateAttendancePercentage(attendance, NUM_SEMANAS);
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<strong>${participantName}</strong>: ${percentage}`;
+                    participantSummaryList.appendChild(listItem);
+                });
+            }
+            adminSummarySection.appendChild(participantSummaryList);
+
+            return adminSummarySection;
+        }
+
+
+        /**
          * Gera a tela de boas-vindas com os links para cada ala e o acesso central.
          */
         function generateWelcomeScreen() {
@@ -616,7 +711,7 @@
             if (modeParam === 'admin') {
                 mainContentDiv.innerHTML = ''; // Limpa o spinner
                 for (const alaName of ALAS) {
-                    const alaSection = await createAlaSectionElement(alaName);
+                    const alaSection = await createAlaAdminSummaryElement(alaName); // Usa a nova função para o resumo admin
                     mainContentDiv.appendChild(alaSection);
                 }
             } else if (alaParam) {
