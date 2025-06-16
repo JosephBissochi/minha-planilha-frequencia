@@ -1,691 +1,641 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2856
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
-{\colortbl;\red255\green255\blue255;\red70\green137\blue204;\red23\green24\blue24;\red140\green211\blue254;
-\red202\green202\blue202;\red109\green109\blue109;\red194\green126\blue101;\red109\green115\blue120;\red183\green111\blue247;
-\red212\green212\blue212;\red113\green192\blue131;\red167\green197\blue152;\red54\green192\blue160;\red246\green124\blue48;
-\red163\green79\blue131;}
-{\*\expandedcolortbl;;\cssrgb\c33725\c61176\c83922;\cssrgb\c11765\c12157\c12549;\cssrgb\c61176\c86275\c99608;
-\cssrgb\c83137\c83137\c83137;\cssrgb\c50196\c50196\c50196;\cssrgb\c80784\c56863\c47059;\cssrgb\c50196\c52549\c54510;\cssrgb\c77255\c54118\c97647;
-\cssrgb\c86275\c86275\c86275;\cssrgb\c50588\c78824\c58431;\cssrgb\c70980\c80784\c65882;\cssrgb\c23922\c78824\c69020;\cssrgb\c98039\c56471\c24314;
-\cssrgb\c70588\c40000\c58431;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww33400\viewh17220\viewkind0
-\deftab720
-\pard\pardeftab720\partightenfactor0
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planilha de Frequência das Alas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Importa as funções necessárias do Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 <!DOCTYPE\cf4 \strokec4  html\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf6 \cb3 \strokec6 <\cf2 \strokec2 html\cf5 \strokec5  \cf4 \strokec4 lang\cf6 \strokec6 =\cf7 \strokec7 "pt-BR"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cf6 \cb3 \strokec6 <\cf2 \strokec2 head\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3     \cf6 \strokec6 <\cf2 \strokec2 meta\cf5 \strokec5  \cf4 \strokec4 charset\cf6 \strokec6 =\cf7 \strokec7 "UTF-8"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3     \cf6 \strokec6 <\cf2 \strokec2 meta\cf5 \strokec5  \cf4 \strokec4 name\cf6 \strokec6 =\cf7 \strokec7 "viewport"\cf5 \strokec5  \cf4 \strokec4 content\cf6 \strokec6 =\cf7 \strokec7 "width=device-width, initial-scale=1.0"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3     \cf6 \strokec6 <\cf2 \strokec2 title\cf6 \strokec6 >\cf5 \strokec5 Planilha de Frequ\'eancia das Alas\cf6 \strokec6 </\cf2 \strokec2 title\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3     \cf6 \strokec6 <\cf2 \strokec2 script\cf5 \strokec5  \cf4 \strokec4 src\cf6 \strokec6 =\cf7 \strokec7 "https://cdn.tailwindcss.com"\cf6 \strokec6 ></\cf2 \strokec2 script\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3     \cf8 \strokec8 <!-- Firebase SDKs -->\cf5 \cb1 \strokec5 \
-\cb3     \cf6 \strokec6 <\cf2 \strokec2 script\cf5 \strokec5  \cf4 \strokec4 type\cf6 \strokec6 =\cf7 \strokec7 "module"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3         \cf8 \strokec8 // Importa as fun\'e7\'f5es necess\'e1rias do Firebase SDK\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 import\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \strokec5  initializeApp \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 from\cf5 \strokec5  \cf11 \strokec11 "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 import\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \strokec5  getAuth\cf10 \strokec10 ,\cf5 \strokec5  signInAnonymously\cf10 \strokec10 ,\cf5 \strokec5  signInWithCustomToken\cf10 \strokec10 ,\cf5 \strokec5  onAuthStateChanged \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 from\cf5 \strokec5  \cf11 \strokec11 "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 import\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \strokec5  getFirestore\cf10 \strokec10 ,\cf5 \strokec5  doc\cf10 \strokec10 ,\cf5 \strokec5  setDoc\cf10 \strokec10 ,\cf5 \strokec5  getDoc\cf10 \strokec10 ,\cf5 \strokec5  collection\cf10 \strokec10 ,\cf5 \strokec5  getDocs \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 from\cf5 \strokec5  \cf11 \strokec11 "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 // Vari\'e1veis globais para as inst\'e2ncias do Firebase e estado de autentica\'e7\'e3o\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 let\cf5 \strokec5  app\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 let\cf5 \strokec5  db\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 let\cf5 \strokec5  auth\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 let\cf5 \strokec5  userId\cf10 \strokec10 ;\cf5 \strokec5  \cf8 \strokec8 // Armazena o ID do usu\'e1rio autenticado\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 let\cf5 \strokec5  isAuthReady \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 false\cf10 \strokec10 ;\cf5 \strokec5  \cf8 \strokec8 // Flag para indicar se a autentica\'e7\'e3o est\'e1 pronta\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 // Exp\'f5e as fun\'e7\'f5es do Firebase no objeto global 'window' para que o script principal possa acess\'e1-las.\cf5 \cb1 \strokec5 \
-\cb3         \cf8 \strokec8 // Isso \'e9 necess\'e1rio devido \'e0 forma como os m\'f3dulos ES s\'e3o tratados em scripts 'type="module"' e 'defer'.\cf5 \cb1 \strokec5 \
-\cb3         window\cf10 \strokec10 .\cf5 \strokec5 firebase \cf10 \strokec10 =\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             initializeApp\cf10 \strokec10 ,\cf5 \strokec5  getAuth\cf10 \strokec10 ,\cf5 \strokec5  signInAnonymously\cf10 \strokec10 ,\cf5 \strokec5  signInWithCustomToken\cf10 \strokec10 ,\cf5 \strokec5  onAuthStateChanged\cf10 \strokec10 ,\cf5 \cb1 \strokec5 \
-\cb3             getFirestore\cf10 \strokec10 ,\cf5 \strokec5  doc\cf10 \strokec10 ,\cf5 \strokec5  setDoc\cf10 \strokec10 ,\cf5 \strokec5  getDoc\cf10 \strokec10 ,\cf5 \strokec5  collection\cf10 \strokec10 ,\cf5 \strokec5  getDocs\cb1 \
-\cb3         \cf10 \strokec10 \};\cf5 \cb1 \strokec5 \
-\cb3         window\cf10 \strokec10 .\cf5 \strokec5 isAuthReady \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 false\cf10 \strokec10 ;\cf5 \strokec5  \cf8 \strokec8 // Inicializa a flag de autentica\'e7\'e3o para o script principal\cf5 \cb1 \strokec5 \
-\cb3     \cf6 \strokec6 </\cf2 \strokec2 script\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3     \cf6 \strokec6 <\cf2 \strokec2 style\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3         \cf8 \strokec8 /* Estilos base do corpo e cont\'eainer principal */\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 body\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-family:\cf5 \strokec5  \cf11 \strokec11 'Inter'\cf10 \strokec10 ,\cf5 \strokec5  \cf7 \strokec7 sans-serif\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 background-color:\cf5 \strokec5  #f0f2f5\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .container\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 max-width:\cf5 \strokec5  \cf12 \strokec12 1200px\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /* Estilo responsivo para tabelas: adiciona rolagem horizontal se o conte\'fado for muito largo */\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .table-responsive\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 overflow-x:\cf5 \strokec5  \cf7 \strokec7 auto\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 -webkit-overflow-scrolling:\cf5 \strokec5  \cf7 \strokec7 touch\cf10 \strokec10 ;\cf5 \strokec5  \cf8 \strokec8 /* Melhora a rolagem em dispositivos iOS */\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border-radius:\cf5 \strokec5  \cf12 \strokec12 0.5rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 box-shadow:\cf5 \strokec5  \cf12 \strokec12 0\cf5 \strokec5  \cf12 \strokec12 4px\cf5 \strokec5  \cf12 \strokec12 6px\cf5 \strokec5  \cf7 \strokec7 rgba(\cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0.1\cf7 \strokec7 )\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /* Estilo da tabela */\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 table\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 width:\cf5 \strokec5  \cf12 \strokec12 100%\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 min-width:\cf5 \strokec5  \cf12 \strokec12 900px\cf10 \strokec10 ;\cf5 \strokec5  \cf8 \strokec8 /* Garante que a tabela tenha uma largura m\'ednima para legibilidade */\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border-collapse:\cf5 \strokec5  \cf7 \strokec7 collapse\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 margin-top:\cf5 \strokec5  \cf12 \strokec12 1rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 margin-bottom:\cf5 \strokec5  \cf12 \strokec12 2rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 th\cf10 \strokec10 ,\cf5 \strokec5  \cf2 \strokec2 td\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 padding:\cf5 \strokec5  \cf12 \strokec12 0.75rem\cf5 \strokec5  \cf12 \strokec12 1rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 text-align:\cf5 \strokec5  \cf7 \strokec7 left\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border-bottom:\cf5 \strokec5  \cf12 \strokec12 1px\cf5 \strokec5  \cf7 \strokec7 solid\cf5 \strokec5  #e2e8f0\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 th\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 background-color:\cf5 \strokec5  #4c51bf\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 color:\cf5 \strokec5  \cf7 \strokec7 white\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-weight:\cf5 \strokec5  \cf12 \strokec12 600\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 text-transform:\cf5 \strokec5  \cf7 \strokec7 uppercase\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-size:\cf5 \strokec5  \cf12 \strokec12 0.875rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 white-space:\cf5 \strokec5  \cf7 \strokec7 nowrap\cf10 \strokec10 ;\cf5 \strokec5  \cf8 \strokec8 /* Impede quebras de linha nos cabe\'e7alhos */\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 td\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 background-color:\cf5 \strokec5  #ffffff\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 color:\cf5 \strokec5  #4a5568\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-size:\cf5 \strokec5  \cf12 \strokec12 0.95rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 tr:last-child\cf5 \strokec5  \cf2 \strokec2 td\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border-bottom:\cf5 \strokec5  \cf7 \strokec7 none\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 tr:hover\cf5 \strokec5  \cf2 \strokec2 td\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 background-color:\cf5 \strokec5  #f7fafc\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /* Se\'e7\'f5es individuais das alas */\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .ala-section\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 background-color:\cf5 \strokec5  #ffffff\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 padding:\cf5 \strokec5  \cf12 \strokec12 1.5rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border-radius:\cf5 \strokec5  \cf12 \strokec12 0.75rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 box-shadow:\cf5 \strokec5  \cf12 \strokec12 0\cf5 \strokec5  \cf12 \strokec12 10px\cf5 \strokec5  \cf12 \strokec12 15px\cf5 \strokec5  \cf7 \strokec7 rgba(\cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0.1\cf7 \strokec7 )\cf10 \strokec10 ;\cf5 \strokec5  \cf8 \strokec8 /* Sombra mais pronunciada */\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 margin-bottom:\cf5 \strokec5  \cf12 \strokec12 2rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .ala-title\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 color:\cf5 \strokec5  #4c51bf\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-size:\cf5 \strokec5  \cf12 \strokec12 1.75rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-weight:\cf5 \strokec5  \cf12 \strokec12 700\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 margin-bottom:\cf5 \strokec5  \cf12 \strokec12 1rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 text-align:\cf5 \strokec5  \cf7 \strokec7 center\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /* Campo de entrada para o nome do participante */\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .participant-name-input\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 width:\cf5 \strokec5  \cf12 \strokec12 100%\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 padding:\cf5 \strokec5  \cf12 \strokec12 0.5rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border:\cf5 \strokec5  \cf12 \strokec12 1px\cf5 \strokec5  \cf7 \strokec7 solid\cf5 \strokec5  #cbd5e0\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border-radius:\cf5 \strokec5  \cf12 \strokec12 0.375rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 box-shadow:\cf5 \strokec5  \cf7 \strokec7 inset\cf5 \strokec5  \cf12 \strokec12 0\cf5 \strokec5  \cf12 \strokec12 1px\cf5 \strokec5  \cf12 \strokec12 2px\cf5 \strokec5  \cf7 \strokec7 rgba(\cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0.05\cf7 \strokec7 )\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-size:\cf5 \strokec5  \cf12 \strokec12 0.95rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 color:\cf5 \strokec5  #4a5568\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /* Campos de entrada para curso e datas */\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .course-info-input\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 width:\cf5 \strokec5  \cf12 \strokec12 100%\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 padding:\cf5 \strokec5  \cf12 \strokec12 0.6rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border:\cf5 \strokec5  \cf12 \strokec12 1px\cf5 \strokec5  \cf7 \strokec7 solid\cf5 \strokec5  #cbd5e0\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border-radius:\cf5 \strokec5  \cf12 \strokec12 0.375rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 box-shadow:\cf5 \strokec5  \cf7 \strokec7 inset\cf5 \strokec5  \cf12 \strokec12 0\cf5 \strokec5  \cf12 \strokec12 1px\cf5 \strokec5  \cf12 \strokec12 2px\cf5 \strokec5  \cf7 \strokec7 rgba(\cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0.05\cf7 \strokec7 )\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-size:\cf5 \strokec5  \cf12 \strokec12 1rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 color:\cf5 \strokec5  #4a5568\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 margin-top:\cf5 \strokec5  \cf12 \strokec12 0.5rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .course-info-label\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 display:\cf5 \strokec5  \cf7 \strokec7 block\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 margin-top:\cf5 \strokec5  \cf12 \strokec12 1rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 margin-bottom:\cf5 \strokec5  \cf12 \strokec12 0.25rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-weight:\cf5 \strokec5  \cf12 \strokec12 600\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 color:\cf5 \strokec5  #4a5568\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-size:\cf5 \strokec5  \cf12 \strokec12 0.9rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\
-\cb3         \cf8 \strokec8 /* Checkbox de presen\'e7a */\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .attendance-checkbox\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 display:\cf5 \strokec5  \cf7 \strokec7 flex\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 justify-content:\cf5 \strokec5  \cf7 \strokec7 center\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 align-items:\cf5 \strokec5  \cf7 \strokec7 center\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 height:\cf5 \strokec5  \cf12 \strokec12 100%\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /* Indicador de carregamento (spinner) */\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .loading-spinner\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border:\cf5 \strokec5  \cf12 \strokec12 4px\cf5 \strokec5  \cf7 \strokec7 solid\cf5 \strokec5  #f3f3f3\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border-top:\cf5 \strokec5  \cf12 \strokec12 4px\cf5 \strokec5  \cf7 \strokec7 solid\cf5 \strokec5  #4c51bf\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border-radius:\cf5 \strokec5  \cf12 \strokec12 50%\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 width:\cf5 \strokec5  \cf12 \strokec12 24px\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 height:\cf5 \strokec5  \cf12 \strokec12 24px\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 animation:\cf5 \strokec5  \cf7 \strokec7 spin\cf5 \strokec5  \cf12 \strokec12 1s\cf5 \strokec5  \cf7 \strokec7 linear\cf5 \strokec5  \cf7 \strokec7 infinite\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 margin:\cf5 \strokec5  \cf12 \strokec12 0\cf5 \strokec5  \cf7 \strokec7 auto\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 @keyframes\cf5 \strokec5  \cf7 \strokec7 spin\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf12 \strokec12 0%\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \strokec5  \cf4 \strokec4 transform:\cf5 \strokec5  \cf7 \strokec7 rotate(\cf12 \strokec12 0deg\cf7 \strokec7 )\cf10 \strokec10 ;\cf5 \strokec5  \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3             \cf12 \strokec12 100%\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \strokec5  \cf4 \strokec4 transform:\cf5 \strokec5  \cf7 \strokec7 rotate(\cf12 \strokec12 360deg\cf7 \strokec7 )\cf10 \strokec10 ;\cf5 \strokec5  \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf2 \strokec2 .welcome-section\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 background-color:\cf5 \strokec5  #e0f2f7\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 padding:\cf5 \strokec5  \cf12 \strokec12 2rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border-radius:\cf5 \strokec5  \cf12 \strokec12 0.75rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 text-align:\cf5 \strokec5  \cf7 \strokec7 center\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 box-shadow:\cf5 \strokec5  \cf12 \strokec12 0\cf5 \strokec5  \cf12 \strokec12 5px\cf5 \strokec5  \cf12 \strokec12 10px\cf5 \strokec5  \cf7 \strokec7 rgba(\cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0\cf10 \strokec10 ,\cf5 \strokec5  \cf12 \strokec12 0.08\cf7 \strokec7 )\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .welcome-section\cf5 \strokec5  \cf2 \strokec2 h2\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-size:\cf5 \strokec5  \cf12 \strokec12 2rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 color:\cf5 \strokec5  #2c5282\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 margin-bottom:\cf5 \strokec5  \cf12 \strokec12 1rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .welcome-section\cf5 \strokec5  \cf2 \strokec2 p\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-size:\cf5 \strokec5  \cf12 \strokec12 1.1rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 color:\cf5 \strokec5  #4a5568\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 margin-bottom:\cf5 \strokec5  \cf12 \strokec12 1.5rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .welcome-section\cf5 \strokec5  \cf2 \strokec2 .link-list\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 list-style:\cf5 \strokec5  \cf7 \strokec7 none\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 padding:\cf5 \strokec5  \cf12 \strokec12 0\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .welcome-section\cf5 \strokec5  \cf2 \strokec2 .link-list\cf5 \strokec5  \cf2 \strokec2 li\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 margin-bottom:\cf5 \strokec5  \cf12 \strokec12 0.75rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .welcome-section\cf5 \strokec5  \cf2 \strokec2 .link-list\cf5 \strokec5  \cf2 \strokec2 a\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 display:\cf5 \strokec5  \cf7 \strokec7 inline-block\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 background-color:\cf5 \strokec5  #667eea\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 color:\cf5 \strokec5  \cf7 \strokec7 white\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 padding:\cf5 \strokec5  \cf12 \strokec12 0.75rem\cf5 \strokec5  \cf12 \strokec12 1.5rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 border-radius:\cf5 \strokec5  \cf12 \strokec12 0.5rem\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 text-decoration:\cf5 \strokec5  \cf7 \strokec7 none\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 font-weight:\cf5 \strokec5  \cf12 \strokec12 600\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 transition:\cf5 \strokec5  \cf7 \strokec7 background-color\cf5 \strokec5  \cf12 \strokec12 0.3s\cf5 \strokec5  \cf7 \strokec7 ease\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf2 \strokec2 .welcome-section\cf5 \strokec5  \cf2 \strokec2 .link-list\cf5 \strokec5  \cf2 \strokec2 a:hover\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf4 \strokec4 background-color:\cf5 \strokec5  #5a67d8\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3     \cf6 \strokec6 </\cf2 \strokec2 style\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf6 \cb3 \strokec6 </\cf2 \strokec2 head\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cf6 \cb3 \strokec6 <\cf2 \strokec2 body\cf5 \strokec5  \cf4 \strokec4 class\cf6 \strokec6 =\cf7 \strokec7 "p-4 sm:p-6 md:p-8"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3     \cf6 \strokec6 <\cf2 \strokec2 div\cf5 \strokec5  \cf4 \strokec4 class\cf6 \strokec6 =\cf7 \strokec7 "container mx-auto p-4 bg-white rounded-lg shadow-xl my-8"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3         \cf6 \strokec6 <\cf2 \strokec2 h1\cf5 \strokec5  \cf4 \strokec4 class\cf6 \strokec6 =\cf7 \strokec7 "text-3xl sm:text-4xl font-extrabold text-center text-indigo-700 mb-8 mt-4"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3             Planilha de Frequ\'eancia - Alas de S\'e3o Paulo\cb1 \
-\cb3         \cf6 \strokec6 </\cf2 \strokec2 h1\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3         \cf6 \strokec6 <\cf2 \strokec2 p\cf5 \strokec5  \cf4 \strokec4 class\cf6 \strokec6 =\cf7 \strokec7 "text-lg text-gray-600 text-center mb-4"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3             Acompanhe a frequ\'eancia dos participantes de cada ala durante 12 semanas.\cb1 \
-\cb3             Marque a caixa para registrar a presen\'e7a de cada participante.\cb1 \
-\cb3             Voc\'ea pode editar os nomes dos participantes diretamente na tabela.\cb1 \
-\cb3         \cf6 \strokec6 </\cf2 \strokec2 p\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3         \cf6 \strokec6 <\cf2 \strokec2 p\cf5 \strokec5  \cf4 \strokec4 id\cf6 \strokec6 =\cf7 \strokec7 "user-id-display"\cf5 \strokec5  \cf4 \strokec4 class\cf6 \strokec6 =\cf7 \strokec7 "text-sm text-gray-500 text-center mb-8"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3             Carregando ID do usu\'e1rio...\cb1 \
-\cb3         \cf6 \strokec6 </\cf2 \strokec2 p\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf6 \strokec6 <\cf2 \strokec2 div\cf5 \strokec5  \cf4 \strokec4 id\cf6 \strokec6 =\cf7 \strokec7 "main-content"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3             \cf8 \strokec8 <!-- Conte\'fado ser\'e1 carregado aqui dinamicamente -->\cf5 \cb1 \strokec5 \
-\cb3         \cf6 \strokec6 </\cf2 \strokec2 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3     \cf6 \strokec6 </\cf2 \strokec2 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\
-\cb3     \cf6 \strokec6 <\cf2 \strokec2 script\cf5 \strokec5  \cf4 \strokec4 type\cf6 \strokec6 =\cf7 \strokec7 "module"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cb3         \cf8 \strokec8 // Constants for configuration\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 const\cf5 \strokec5  \cf13 \strokec13 ALAS\cf5 \strokec5  \cf10 \strokec10 =\cf5 \strokec5  \cf10 \strokec10 [\cf5 \cb1 \strokec5 \
-\cb3             \cf11 \strokec11 "Ala Aracati (SP)"\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 "Ala Ch\'e1cara Santana"\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 "Ala Figueira Grande"\cf10 \strokec10 ,\cf5 \cb1 \strokec5 \
-\cb3             \cf11 \strokec11 "Ala Guarapiranga"\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 "Ala Horizonte Azul"\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 "Ala Jardim Capela"\cf10 \strokec10 ,\cf5 \cb1 \strokec5 \
-\cb3             \cf11 \strokec11 "Ala Jardim Jacira"\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 "Ala Jardim \'c2ngela"\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 "Ala Ranieri"\cf10 \strokec10 ,\cf5 \cb1 \strokec5 \
-\cb3             \cf11 \strokec11 "Ala Riviera Paulista"\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 ];\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 const\cf5 \strokec5  \cf13 \strokec13 NUM_PARTICIPANTS\cf5 \strokec5  \cf10 \strokec10 =\cf5 \strokec5  \cf14 \strokec14 20\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 const\cf5 \strokec5  \cf13 \strokec13 NUM_SEMANAS\cf5 \strokec5  \cf10 \strokec10 =\cf5 \strokec5  \cf14 \strokec14 12\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 // Firebase instances (will be initialized after authentication)\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 let\cf5 \strokec5  app\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 let\cf5 \strokec5  db\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 let\cf5 \strokec5  auth\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf9 \strokec9 let\cf5 \strokec5  userId\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /**\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf8 \cb3 \strokec8          * Inicializa o Firebase e lida com a autentica\'e7\'e3o do usu\'e1rio.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * Garante que o userId esteja dispon\'edvel antes de interagir com o Firestore.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          */\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3         \cf9 \strokec9 async\cf5 \strokec5  \cf9 \strokec9 function\cf5 \strokec5  initializeFirebaseAndAuth\cf10 \strokec10 ()\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 try\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 \cf8 \strokec8 // As vari\'e1veis __app_id, __firebase_config, __initial_auth_token s\'e3o fornecidas pelo ambiente Canvas\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  appId \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 typeof\cf5 \strokec5  __app_id \cf10 \strokec10 !==\cf5 \strokec5  \cf11 \strokec11 'undefined'\cf5 \strokec5  \cf10 \strokec10 ?\cf5 \strokec5  __app_id \cf10 \strokec10 :\cf5 \strokec5  \cf11 \strokec11 'default-app-id'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  firebaseConfig \cf10 \strokec10 =\cf5 \strokec5  \cf13 \strokec13 JSON\cf10 \strokec10 .\cf5 \strokec5 parse\cf10 \strokec10 (\cf9 \strokec9 typeof\cf5 \strokec5  __firebase_config \cf10 \strokec10 !==\cf5 \strokec5  \cf11 \strokec11 'undefined'\cf5 \strokec5  \cf10 \strokec10 ?\cf5 \strokec5  __firebase_config \cf10 \strokec10 :\cf5 \strokec5  \cf11 \strokec11 '\{\}'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3                 app \cf10 \strokec10 =\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 initializeApp\cf10 \strokec10 (\cf5 \strokec5 firebaseConfig\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 db \cf10 \strokec10 =\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 getFirestore\cf10 \strokec10 (\cf5 \strokec5 app\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 auth \cf10 \strokec10 =\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 getAuth\cf10 \strokec10 (\cf5 \strokec5 app\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3                 \cf9 \strokec9 return\cf5 \strokec5  \cf9 \strokec9 new\cf5 \strokec5  \cf13 \strokec13 Promise\cf10 \strokec10 (\cf5 \strokec5 resolve \cf10 \strokec10 =>\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                     window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 onAuthStateChanged\cf10 \strokec10 (\cf5 \strokec5 auth\cf10 \strokec10 ,\cf5 \strokec5  \cf9 \strokec9 async\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 user\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 =>\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                         \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 user\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                             userId \cf10 \strokec10 =\cf5 \strokec5  user\cf10 \strokec10 .\cf5 \strokec5 uid\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                             document\cf10 \strokec10 .\cf5 \strokec5 getElementById\cf10 \strokec10 (\cf11 \strokec11 'user-id-display'\cf10 \strokec10 ).\cf5 \strokec5 textContent \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 `Seu ID de Usu\'e1rio: \cf10 \strokec10 $\{\cf5 \strokec5 userId\cf10 \strokec10 \}\cf11 \strokec11 `\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                             window\cf10 \strokec10 .\cf5 \strokec5 isAuthReady \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 true\cf10 \strokec10 ;\cf5 \strokec5  \cf8 \strokec8 // Sinaliza que a autentica\'e7\'e3o est\'e1 pronta\cf5 \cb1 \strokec5 \
-\cb3                             resolve\cf10 \strokec10 ();\cf5 \cb1 \strokec5 \
-\cb3                         \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 else\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                             \cf9 \strokec9 try\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                                 \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (\cf9 \strokec9 typeof\cf5 \strokec5  __initial_auth_token \cf10 \strokec10 !==\cf5 \strokec5  \cf11 \strokec11 'undefined'\cf5 \strokec5  \cf10 \strokec10 &&\cf5 \strokec5  __initial_auth_token\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                                     \cf9 \strokec9 await\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 signInWithCustomToken\cf10 \strokec10 (\cf5 \strokec5 auth\cf10 \strokec10 ,\cf5 \strokec5  __initial_auth_token\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                                 \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 else\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                                     \cf9 \strokec9 await\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 signInAnonymously\cf10 \strokec10 (\cf5 \strokec5 auth\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                                 \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3                                 \cf8 \strokec8 // onAuthStateChanged ser\'e1 acionado novamente com o usu\'e1rio autenticado\cf5 \cb1 \strokec5 \
-\cb3                             \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 catch\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 error\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                                 console\cf10 \strokec10 .\cf5 \strokec5 error\cf10 \strokec10 (\cf11 \strokec11 "Erro de autentica\'e7\'e3o:"\cf10 \strokec10 ,\cf5 \strokec5  error\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                                 document\cf10 \strokec10 .\cf5 \strokec5 getElementById\cf10 \strokec10 (\cf11 \strokec11 'user-id-display'\cf10 \strokec10 ).\cf5 \strokec5 textContent \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 `Erro de autentica\'e7\'e3o: \cf10 \strokec10 $\{\cf5 \strokec5 error\cf10 \strokec10 .\cf5 \strokec5 message\cf10 \strokec10 \}\cf11 \strokec11 `\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                                 userId \cf10 \strokec10 =\cf5 \strokec5  crypto\cf10 \strokec10 .\cf5 \strokec5 randomUUID\cf10 \strokec10 ();\cf5 \strokec5  \cf8 \strokec8 // Fallback para um ID aleat\'f3rio se a autentica\'e7\'e3o falhar\cf5 \cb1 \strokec5 \
-\cb3                                 window\cf10 \strokec10 .\cf5 \strokec5 isAuthReady \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 true\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                                 resolve\cf10 \strokec10 ();\cf5 \cb1 \strokec5 \
-\cb3                             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3                         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3                     \cf10 \strokec10 \});\cf5 \cb1 \strokec5 \
-\cb3                 \cf10 \strokec10 \});\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 catch\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 e\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 console\cf10 \strokec10 .\cf5 \strokec5 error\cf10 \strokec10 (\cf11 \strokec11 "Erro ao inicializar o Firebase:"\cf10 \strokec10 ,\cf5 \strokec5  e\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 document\cf10 \strokec10 .\cf5 \strokec5 getElementById\cf10 \strokec10 (\cf11 \strokec11 'user-id-display'\cf10 \strokec10 ).\cf5 \strokec5 textContent \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'Erro ao inicializar o Firebase.'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /**\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf8 \cb3 \strokec8          * Salva o estado de frequ\'eancia e o nome de um participante no Firestore.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * Agora salva na cole\'e7\'e3o 'public_alas_data'.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{string\} alaId - ID sanitizado da ala.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{string\} participantId - ID do participante.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{Object\} dataToSave - Objeto contendo o nome e o array de frequ\'eancia. Ex: \{ name: "Nome", attendance: [true, false, ...] \}\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          */\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3         \cf9 \strokec9 async\cf5 \strokec5  \cf9 \strokec9 function\cf5 \strokec5  saveParticipantData\cf10 \strokec10 (\cf5 \strokec5 alaId\cf10 \strokec10 ,\cf5 \strokec5  participantId\cf10 \strokec10 ,\cf5 \strokec5  dataToSave\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (!\cf5 \strokec5 window\cf10 \strokec10 .\cf5 \strokec5 isAuthReady \cf10 \strokec10 ||\cf5 \strokec5  \cf10 \strokec10 !\cf5 \strokec5 userId\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 console\cf10 \strokec10 .\cf5 \strokec5 warn\cf10 \strokec10 (\cf11 \strokec11 "Autentica\'e7\'e3o n\'e3o pronta ou userId ausente. N\'e3o \'e9 poss\'edvel salvar dados."\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 return\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 try\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  participantDocRef \cf10 \strokec10 =\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 doc\cf10 \strokec10 (\cf5 \strokec5 db\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 `artifacts/\cf10 \strokec10 $\{\cf5 \strokec5 __app_id\cf10 \strokec10 \}\cf11 \strokec11 /public_alas_data/\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 /participants`\cf10 \strokec10 ,\cf5 \strokec5  participantId\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 await\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 setDoc\cf10 \strokec10 (\cf5 \strokec5 participantDocRef\cf10 \strokec10 ,\cf5 \strokec5  dataToSave\cf10 \strokec10 ,\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \strokec5  merge\cf10 \strokec10 :\cf5 \strokec5  \cf9 \strokec9 true\cf5 \strokec5  \cf10 \strokec10 \});\cf5 \cb1 \strokec5 \
-\cb3                 \cb1 \
-\cb3                 \cf8 \strokec8 // Atualiza a porcentagem de frequ\'eancia na linha do participante instantaneamente\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  percentageSpan \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 getElementById\cf10 \strokec10 (\cf11 \strokec11 `percentage-\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 -\cf10 \strokec10 $\{\cf5 \strokec5 participantId\cf10 \strokec10 \}\cf11 \strokec11 `\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 percentageSpan\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                     percentageSpan\cf10 \strokec10 .\cf5 \strokec5 textContent \cf10 \strokec10 =\cf5 \strokec5  calculateAttendancePercentage\cf10 \strokec10 (\cf5 \strokec5 dataToSave\cf10 \strokec10 .\cf5 \strokec5 attendance\cf10 \strokec10 ,\cf5 \strokec5  \cf13 \strokec13 NUM_SEMANAS\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 catch\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 e\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 console\cf10 \strokec10 .\cf5 \strokec5 error\cf10 \strokec10 (\cf11 \strokec11 "Erro ao salvar dados do participante:"\cf10 \strokec10 ,\cf5 \strokec5  e\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /**\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf8 \cb3 \strokec8          * Carrega o estado de frequ\'eancia e o nome de um participante do Firestore.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * Agora carrega da cole\'e7\'e3o 'public_alas_data'.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{string\} alaId - ID sanitizado da ala.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{string\} participantId - ID do participante.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @returns \{Promise<Object>\} - Objeto contendo o nome e o array de frequ\'eancia, ou um objeto padr\'e3o se n\'e3o houver dados.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          */\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3         \cf9 \strokec9 async\cf5 \strokec5  \cf9 \strokec9 function\cf5 \strokec5  loadParticipantData\cf10 \strokec10 (\cf5 \strokec5 alaId\cf10 \strokec10 ,\cf5 \strokec5  participantId\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (!\cf5 \strokec5 window\cf10 \strokec10 .\cf5 \strokec5 isAuthReady \cf10 \strokec10 ||\cf5 \strokec5  \cf10 \strokec10 !\cf5 \strokec5 userId\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 console\cf10 \strokec10 .\cf5 \strokec5 warn\cf10 \strokec10 (\cf11 \strokec11 "Autentica\'e7\'e3o n\'e3o pronta ou userId ausente. N\'e3o \'e9 poss\'edvel carregar dados."\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 return\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \strokec5  name\cf10 \strokec10 :\cf5 \strokec5  \cf11 \strokec11 `Participante \cf10 \strokec10 $\{\cf5 \strokec5 parseInt\cf10 \strokec10 (\cf5 \strokec5 participantId\cf10 \strokec10 .\cf5 \strokec5 replace\cf10 \strokec10 (\cf11 \strokec11 'participante-'\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 ''\cf10 \strokec10 ))\}\cf11 \strokec11 `\cf10 \strokec10 ,\cf5 \strokec5  attendance\cf10 \strokec10 :\cf5 \strokec5  \cf13 \strokec13 Array\cf10 \strokec10 (\cf13 \strokec13 NUM_SEMANAS\cf10 \strokec10 ).\cf5 \strokec5 fill\cf10 \strokec10 (\cf9 \strokec9 false\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \};\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 try\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  participantDocRef \cf10 \strokec10 =\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 doc\cf10 \strokec10 (\cf5 \strokec5 db\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 `artifacts/\cf10 \strokec10 $\{\cf5 \strokec5 __app_id\cf10 \strokec10 \}\cf11 \strokec11 /public_alas_data/\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 /participants`\cf10 \strokec10 ,\cf5 \strokec5  participantId\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  docSnap \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 await\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 getDoc\cf10 \strokec10 (\cf5 \strokec5 participantDocRef\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 docSnap\cf10 \strokec10 .\cf5 \strokec5 exists\cf10 \strokec10 ())\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                     \cf9 \strokec9 const\cf5 \strokec5  data \cf10 \strokec10 =\cf5 \strokec5  docSnap\cf10 \strokec10 .\cf5 \strokec5 data\cf10 \strokec10 ();\cf5 \cb1 \strokec5 \
-\cb3                     \cf9 \strokec9 return\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                         name\cf10 \strokec10 :\cf5 \strokec5  data\cf10 \strokec10 .\cf5 \strokec5 name \cf10 \strokec10 ||\cf5 \strokec5  \cf11 \strokec11 `Participante \cf10 \strokec10 $\{\cf5 \strokec5 parseInt\cf10 \strokec10 (\cf5 \strokec5 participantId\cf10 \strokec10 .\cf5 \strokec5 replace\cf10 \strokec10 (\cf11 \strokec11 'participante-'\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 ''\cf10 \strokec10 ))\}\cf11 \strokec11 `\cf10 \strokec10 ,\cf5 \cb1 \strokec5 \
-\cb3                         attendance\cf10 \strokec10 :\cf5 \strokec5  data\cf10 \strokec10 .\cf5 \strokec5 attendance \cf10 \strokec10 ||\cf5 \strokec5  \cf13 \strokec13 Array\cf10 \strokec10 (\cf13 \strokec13 NUM_SEMANAS\cf10 \strokec10 ).\cf5 \strokec5 fill\cf10 \strokec10 (\cf9 \strokec9 false\cf10 \strokec10 )\cf5 \cb1 \strokec5 \
-\cb3                     \cf10 \strokec10 \};\cf5 \cb1 \strokec5 \
-\cb3                 \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 return\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \strokec5  name\cf10 \strokec10 :\cf5 \strokec5  \cf11 \strokec11 `Participante \cf10 \strokec10 $\{\cf5 \strokec5 parseInt\cf10 \strokec10 (\cf5 \strokec5 participantId\cf10 \strokec10 .\cf5 \strokec5 replace\cf10 \strokec10 (\cf11 \strokec11 'participante-'\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 ''\cf10 \strokec10 ))\}\cf11 \strokec11 `\cf10 \strokec10 ,\cf5 \strokec5  attendance\cf10 \strokec10 :\cf5 \strokec5  \cf13 \strokec13 Array\cf10 \strokec10 (\cf13 \strokec13 NUM_SEMANAS\cf10 \strokec10 ).\cf5 \strokec5 fill\cf10 \strokec10 (\cf9 \strokec9 false\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \};\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 catch\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 e\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 console\cf10 \strokec10 .\cf5 \strokec5 error\cf10 \strokec10 (\cf11 \strokec11 "Erro ao carregar dados do participante:"\cf10 \strokec10 ,\cf5 \strokec5  e\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 return\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \strokec5  name\cf10 \strokec10 :\cf5 \strokec5  \cf11 \strokec11 `Participante \cf10 \strokec10 $\{\cf5 \strokec5 parseInt\cf10 \strokec10 (\cf5 \strokec5 participantId\cf10 \strokec10 .\cf5 \strokec5 replace\cf10 \strokec10 (\cf11 \strokec11 'participante-'\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 ''\cf10 \strokec10 ))\}\cf11 \strokec11 `\cf10 \strokec10 ,\cf5 \strokec5  attendance\cf10 \strokec10 :\cf5 \strokec5  \cf13 \strokec13 Array\cf10 \strokec10 (\cf13 \strokec13 NUM_SEMANAS\cf10 \strokec10 ).\cf5 \strokec5 fill\cf10 \strokec10 (\cf9 \strokec9 false\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \};\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /**\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf8 \cb3 \strokec8          * Calcula a porcentagem de frequ\'eancia de um participante.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{Array<boolean>\} attendanceArray - Array booleano de presen\'e7a.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{number\} totalWeeks - N\'famero total de semanas.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @returns \{string\} - Porcentagem formatada (ex: "75.00%").\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          */\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3         \cf9 \strokec9 function\cf5 \strokec5  calculateAttendancePercentage\cf10 \strokec10 (\cf5 \strokec5 attendanceArray\cf10 \strokec10 ,\cf5 \strokec5  totalWeeks\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 totalWeeks \cf10 \strokec10 ===\cf5 \strokec5  \cf14 \strokec14 0\cf10 \strokec10 )\cf5 \strokec5  \cf9 \strokec9 return\cf5 \strokec5  \cf11 \strokec11 "0.00%"\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  presentCount \cf10 \strokec10 =\cf5 \strokec5  attendanceArray\cf10 \strokec10 .\cf5 \strokec5 filter\cf10 \strokec10 (\cf5 \strokec5 isPresent \cf10 \strokec10 =>\cf5 \strokec5  isPresent\cf10 \strokec10 ).\cf5 \strokec5 length\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  percentage \cf10 \strokec10 =\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 presentCount \cf10 \strokec10 /\cf5 \strokec5  totalWeeks\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 *\cf5 \strokec5  \cf14 \strokec14 100\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 return\cf5 \strokec5  percentage\cf10 \strokec10 .\cf5 \strokec5 toFixed\cf10 \strokec10 (\cf14 \strokec14 2\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 +\cf5 \strokec5  \cf11 \strokec11 "%"\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /**\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf8 \cb3 \strokec8          * Salva as configura\'e7\'f5es de curso e datas para uma ala espec\'edfica no Firestore.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * Agora salva na cole\'e7\'e3o 'public_alas_data'.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{string\} alaId - ID sanitizado da ala.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{Object\} courseDetails - Objeto contendo nome do curso, data de in\'edcio e data de fim.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          */\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3         \cf9 \strokec9 async\cf5 \strokec5  \cf9 \strokec9 function\cf5 \strokec5  saveAlaCourseDetails\cf10 \strokec10 (\cf5 \strokec5 alaId\cf10 \strokec10 ,\cf5 \strokec5  courseDetails\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (!\cf5 \strokec5 window\cf10 \strokec10 .\cf5 \strokec5 isAuthReady \cf10 \strokec10 ||\cf5 \strokec5  \cf10 \strokec10 !\cf5 \strokec5 userId\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 console\cf10 \strokec10 .\cf5 \strokec5 warn\cf10 \strokec10 (\cf11 \strokec11 "Autentica\'e7\'e3o n\'e3o pronta ou userId ausente. N\'e3o \'e9 poss\'edvel salvar detalhes do curso da ala."\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 return\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 try\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  alaDetailsDocRef \cf10 \strokec10 =\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 doc\cf10 \strokec10 (\cf5 \strokec5 db\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 `artifacts/\cf10 \strokec10 $\{\cf5 \strokec5 __app_id\cf10 \strokec10 \}\cf11 \strokec11 /public_alas_data/\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 /details`\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 'course_info'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 await\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 setDoc\cf10 \strokec10 (\cf5 \strokec5 alaDetailsDocRef\cf10 \strokec10 ,\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                     courseName\cf10 \strokec10 :\cf5 \strokec5  courseDetails\cf10 \strokec10 .\cf5 \strokec5 courseName\cf10 \strokec10 ,\cf5 \cb1 \strokec5 \
-\cb3                     startDate\cf10 \strokec10 :\cf5 \strokec5  courseDetails\cf10 \strokec10 .\cf5 \strokec5 startDate\cf10 \strokec10 ,\cf5 \cb1 \strokec5 \
-\cb3                     endDate\cf10 \strokec10 :\cf5 \strokec5  courseDetails\cf10 \strokec10 .\cf5 \strokec5 endDate\cb1 \
-\cb3                 \cf10 \strokec10 \},\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \strokec5  merge\cf10 \strokec10 :\cf5 \strokec5  \cf9 \strokec9 true\cf5 \strokec5  \cf10 \strokec10 \});\cf5 \cb1 \strokec5 \
-\cb3                 \cf8 \strokec8 // console.log(`Detalhes do curso para ala $\{alaId\} salvos com sucesso.`);\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 catch\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 e\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 console\cf10 \strokec10 .\cf5 \strokec5 error\cf10 \strokec10 (\cf11 \strokec11 `Erro ao salvar detalhes do curso para ala \cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 :`\cf10 \strokec10 ,\cf5 \strokec5  e\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /**\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf8 \cb3 \strokec8          * Carrega as configura\'e7\'f5es de curso e datas para uma ala espec\'edfica do Firestore.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * Agora carrega da cole\'e7\'e3o 'public_alas_data'.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{string\} alaId - ID sanitizado da ala.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @returns \{Promise<Object>\} - Objeto contendo nome do curso, data de in\'edcio e data de fim, ou um objeto vazio se n\'e3o houver dados.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          */\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3         \cf9 \strokec9 async\cf5 \strokec5  \cf9 \strokec9 function\cf5 \strokec5  loadAlaCourseDetails\cf10 \strokec10 (\cf5 \strokec5 alaId\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (!\cf5 \strokec5 window\cf10 \strokec10 .\cf5 \strokec5 isAuthReady \cf10 \strokec10 ||\cf5 \strokec5  \cf10 \strokec10 !\cf5 \strokec5 userId\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 console\cf10 \strokec10 .\cf5 \strokec5 warn\cf10 \strokec10 (\cf11 \strokec11 "Autentica\'e7\'e3o n\'e3o pronta ou userId ausente. N\'e3o \'e9 poss\'edvel carregar detalhes do curso da ala."\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 return\cf5 \strokec5  \cf10 \strokec10 \{\};\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 try\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  alaDetailsDocRef \cf10 \strokec10 =\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 doc\cf10 \strokec10 (\cf5 \strokec5 db\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 `artifacts/\cf10 \strokec10 $\{\cf5 \strokec5 __app_id\cf10 \strokec10 \}\cf11 \strokec11 /public_alas_data/\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 /details`\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 'course_info'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  docSnap \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 await\cf5 \strokec5  window\cf10 \strokec10 .\cf5 \strokec5 firebase\cf10 \strokec10 .\cf5 \strokec5 getDoc\cf10 \strokec10 (\cf5 \strokec5 alaDetailsDocRef\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 docSnap\cf10 \strokec10 .\cf5 \strokec5 exists\cf10 \strokec10 ())\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                     \cf9 \strokec9 return\cf5 \strokec5  docSnap\cf10 \strokec10 .\cf5 \strokec5 data\cf10 \strokec10 ();\cf5 \cb1 \strokec5 \
-\cb3                 \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 return\cf5 \strokec5  \cf10 \strokec10 \{\};\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 catch\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 e\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 console\cf10 \strokec10 .\cf5 \strokec5 error\cf10 \strokec10 (\cf11 \strokec11 `Erro ao carregar detalhes do curso para ala \cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 :`\cf10 \strokec10 ,\cf5 \strokec5  e\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 return\cf5 \strokec5  \cf10 \strokec10 \{\};\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /**\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf8 \cb3 \strokec8          * Cria e popula uma linha para um participante na tabela de frequ\'eancia.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{string\} alaId - ID sanitizado da ala.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{number\} participantNum - N\'famero do participante (1-20).\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @returns \{HTMLTableRowElement\} A linha da tabela HTML.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          */\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3         \cf9 \strokec9 async\cf5 \strokec5  \cf9 \strokec9 function\cf5 \strokec5  createParticipantRow\cf10 \strokec10 (\cf5 \strokec5 alaId\cf10 \strokec10 ,\cf5 \strokec5  participantNum\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  participantId \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 `participante-\cf10 \strokec10 $\{\cf5 \strokec5 participantNum\cf10 \strokec10 \}\cf11 \strokec11 `\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  participantRow \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'tr'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  tdNome \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'td'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             tdNome\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'py-4 px-6 whitespace-nowrap'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             participantRow\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 tdNome\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf8 \strokec8 // Carrega os dados do participante (nome e frequ\'eancia)\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  data \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 await\cf5 \strokec5  loadParticipantData\cf10 \strokec10 (\cf5 \strokec5 alaId\cf10 \strokec10 ,\cf5 \strokec5  participantId\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 let\cf5 \strokec5  currentName \cf10 \strokec10 =\cf5 \strokec5  data\cf10 \strokec10 .\cf5 \strokec5 name\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 let\cf5 \strokec5  attendanceData \cf10 \strokec10 =\cf5 \strokec5  data\cf10 \strokec10 .\cf5 \strokec5 attendance\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  defaultParticipantName \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 `Participante \cf10 \strokec10 $\{\cf5 \strokec5 participantNum\cf10 \strokec10 \}\cf11 \strokec11 `\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf8 \strokec8 // Input para o nome do participante (edit\'e1vel)\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  nameInput \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'input'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             nameInput\cf10 \strokec10 .\cf5 \strokec5 type \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'text'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             nameInput\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'participant-name-input'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             nameInput\cf10 \strokec10 .\cf5 \strokec5 value \cf10 \strokec10 =\cf5 \strokec5  currentName \cf10 \strokec10 ===\cf5 \strokec5  defaultParticipantName \cf10 \strokec10 ?\cf5 \strokec5  \cf11 \strokec11 ''\cf5 \strokec5  \cf10 \strokec10 :\cf5 \strokec5  currentName\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             nameInput\cf10 \strokec10 .\cf5 \strokec5 placeholder \cf10 \strokec10 =\cf5 \strokec5  defaultParticipantName\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             tdNome\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 nameInput\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf8 \strokec8 // Adiciona evento para salvar o nome ao sair do foco\cf5 \cb1 \strokec5 \
-\cb3             nameInput\cf10 \strokec10 .\cf5 \strokec5 addEventListener\cf10 \strokec10 (\cf11 \strokec11 'blur'\cf10 \strokec10 ,\cf5 \strokec5  \cf10 \strokec10 ()\cf5 \strokec5  \cf10 \strokec10 =>\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  newName \cf10 \strokec10 =\cf5 \strokec5  nameInput\cf10 \strokec10 .\cf5 \strokec5 value\cf10 \strokec10 .\cf5 \strokec5 trim\cf10 \strokec10 ();\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  nameToSave \cf10 \strokec10 =\cf5 \strokec5  newName \cf10 \strokec10 ===\cf5 \strokec5  \cf11 \strokec11 ''\cf5 \strokec5  \cf10 \strokec10 ?\cf5 \strokec5  defaultParticipantName \cf10 \strokec10 :\cf5 \strokec5  newName\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\
-\cb3                 \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 nameToSave \cf10 \strokec10 !==\cf5 \strokec5  currentName\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                     currentName \cf10 \strokec10 =\cf5 \strokec5  nameToSave\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                     saveParticipantData\cf10 \strokec10 (\cf5 \strokec5 alaId\cf10 \strokec10 ,\cf5 \strokec5  participantId\cf10 \strokec10 ,\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \strokec5  name\cf10 \strokec10 :\cf5 \strokec5  currentName\cf10 \strokec10 ,\cf5 \strokec5  attendance\cf10 \strokec10 :\cf5 \strokec5  attendanceData \cf10 \strokec10 \});\cf5 \cb1 \strokec5 \
-\cb3                 \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \});\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf8 \strokec8 // Cria c\'e9lulas para os checkboxes de frequ\'eancia\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 for\cf5 \strokec5  \cf10 \strokec10 (\cf9 \strokec9 let\cf5 \strokec5  j \cf10 \strokec10 =\cf5 \strokec5  \cf14 \strokec14 0\cf10 \strokec10 ;\cf5 \strokec5  j \cf10 \strokec10 <\cf5 \strokec5  \cf13 \strokec13 NUM_SEMANAS\cf10 \strokec10 ;\cf5 \strokec5  j\cf10 \strokec10 ++)\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  tdCheckbox \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'td'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 tdCheckbox\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'py-4 px-6 whitespace-nowrap'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  checkboxId \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 `\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 -\cf10 \strokec10 $\{\cf5 \strokec5 participantId\cf10 \strokec10 \}\cf11 \strokec11 -semana-\cf10 \strokec10 $\{\cf5 \strokec5 j \cf10 \strokec10 +\cf5 \strokec5  \cf14 \strokec14 1\cf10 \strokec10 \}\cf11 \strokec11 `\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                 tdCheckbox\cf10 \strokec10 .\cf5 \strokec5 innerHTML \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 `\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf11 \cb3 \strokec11                     <div class="attendance-checkbox">\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                         <input type="checkbox"\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                                id="\cf10 \strokec10 $\{\cf5 \strokec5 checkboxId\cf10 \strokec10 \}\cf11 \strokec11 "\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                                name="\cf10 \strokec10 $\{\cf5 \strokec5 checkboxId\cf10 \strokec10 \}\cf11 \strokec11 "\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                                class="form-checkbox h-5 w-5 text-indigo-600 rounded-md focus:ring-indigo-500"\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                                \cf10 \strokec10 $\{\cf5 \strokec5 attendanceData\cf10 \strokec10 [\cf5 \strokec5 j\cf10 \strokec10 ]\cf5 \strokec5  \cf10 \strokec10 ?\cf5 \strokec5  \cf11 \strokec11 'checked'\cf5 \strokec5  \cf10 \strokec10 :\cf5 \strokec5  \cf11 \strokec11 ''\cf10 \strokec10 \}\cf11 \strokec11 >\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                     </div>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                 `\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3                 participantRow\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 tdCheckbox\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3                 \cf8 \strokec8 // Adiciona o evento de mudan\'e7a para salvar a frequ\'eancia no Firestore\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  checkbox \cf10 \strokec10 =\cf5 \strokec5  tdCheckbox\cf10 \strokec10 .\cf5 \strokec5 querySelector\cf10 \strokec10 (\cf11 \strokec11 `#\cf10 \strokec10 $\{\cf5 \strokec5 checkboxId\cf10 \strokec10 \}\cf11 \strokec11 `\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 checkbox\cf10 \strokec10 .\cf5 \strokec5 addEventListener\cf10 \strokec10 (\cf11 \strokec11 'change'\cf10 \strokec10 ,\cf5 \strokec5  \cf10 \strokec10 ()\cf5 \strokec5  \cf10 \strokec10 =>\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                     attendanceData\cf10 \strokec10 [\cf5 \strokec5 j\cf10 \strokec10 ]\cf5 \strokec5  \cf10 \strokec10 =\cf5 \strokec5  checkbox\cf10 \strokec10 .\cf5 \strokec5 checked\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                     saveParticipantData\cf10 \strokec10 (\cf5 \strokec5 alaId\cf10 \strokec10 ,\cf5 \strokec5  participantId\cf10 \strokec10 ,\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \strokec5  name\cf10 \strokec10 :\cf5 \strokec5  currentName\cf10 \strokec10 ,\cf5 \strokec5  attendance\cf10 \strokec10 :\cf5 \strokec5  attendanceData \cf10 \strokec10 \});\cf5 \cb1 \strokec5 \
-\cb3                 \cf10 \strokec10 \});\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf8 \strokec8 // Adiciona a c\'e9lula para a porcentagem de frequ\'eancia\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  tdPercentage \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'td'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             tdPercentage\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'py-4 px-6 whitespace-nowrap font-semibold'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  percentageSpan \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'span'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             percentageSpan\cf10 \strokec10 .\cf5 \strokec5 id \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 `percentage-\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 -\cf10 \strokec10 $\{\cf5 \strokec5 participantId\cf10 \strokec10 \}\cf11 \strokec11 `\cf10 \strokec10 ;\cf5 \strokec5  \cf8 \strokec8 // ID para atualiza\'e7\'e3o din\'e2mica\cf5 \cb1 \strokec5 \
-\cb3             percentageSpan\cf10 \strokec10 .\cf5 \strokec5 textContent \cf10 \strokec10 =\cf5 \strokec5  calculateAttendancePercentage\cf10 \strokec10 (\cf5 \strokec5 attendanceData\cf10 \strokec10 ,\cf5 \strokec5  \cf13 \strokec13 NUM_SEMANAS\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             tdPercentage\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 percentageSpan\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             participantRow\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 tdPercentage\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf9 \strokec9 return\cf5 \strokec5  participantRow\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /**\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf8 \cb3 \strokec8          * Cria toda a se\'e7\'e3o HTML para uma ala espec\'edfica, incluindo a tabela de frequ\'eancia\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * e os campos de informa\'e7\'e3o do curso.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @param \{string\} alaName - O nome da ala.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * @returns \{HTMLElement\} A se\'e7\'e3o da ala completa.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          */\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3         \cf9 \strokec9 async\cf5 \strokec5  \cf9 \strokec9 function\cf5 \strokec5  createAlaSectionElement\cf10 \strokec10 (\cf5 \strokec5 alaName\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  alaId \cf10 \strokec10 =\cf5 \strokec5  alaName\cf10 \strokec10 .\cf5 \strokec5 replace\cf10 \strokec10 (\cf15 \strokec15 /[^a-zA-Z0-9]/\cf9 \strokec9 g\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 '-'\cf10 \strokec10 ).\cf5 \strokec5 toLowerCase\cf10 \strokec10 ();\cf5 \strokec5  \cf8 \strokec8 // Sanitiza o nome da ala para usar como ID\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  alaSection \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'div'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             alaSection\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'ala-section mb-12'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  alaTitle \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'h2'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             alaTitle\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'ala-title mb-6 pb-2 border-b-2 border-indigo-400'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             alaTitle\cf10 \strokec10 .\cf5 \strokec5 textContent \cf10 \strokec10 =\cf5 \strokec5  alaName\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             alaSection\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 alaTitle\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf8 \strokec8 // Novos campos para Nome do Curso e Datas (dentro de cada ala)\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  courseInfoDiv \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'div'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             courseInfoDiv\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'mb-8 p-6 bg-gray-50 rounded-lg shadow-inner'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             courseInfoDiv\cf10 \strokec10 .\cf5 \strokec5 innerHTML \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 `\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf11 \cb3 \strokec11                 <label for="course-name-input-\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 " class="course-info-label">Nome do Curso:</label>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                 <input type="text" id="course-name-input-\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 " class="course-info-input" placeholder="Ex: Escola Dominical - Doutrina e Conv\'eanios">\cf5 \cb1 \strokec5 \
-\
-\cf11 \cb3 \strokec11                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                     <div>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                         <label for="start-date-input-\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 " class="course-info-label">Data de In\'edcio:</label>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                         <input type="date" id="start-date-input-\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 " class="course-info-input">\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                     </div>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                     <div>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                         <label for="end-date-input-\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 " class="course-info-label">Data de Fim:</label>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                         <input type="date" id="end-date-input-\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 " class="course-info-input">\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                     </div>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                 </div>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11             `\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3             alaSection\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 courseInfoDiv\cf10 \strokec10 );\cf5 \strokec5  \cf8 \strokec8 // ANEXA o div ao DOM antes de tentar preencher os valores\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf8 \strokec8 // Carrega os detalhes do curso para esta ala espec\'edfica\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  alaCourseDetails \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 await\cf5 \strokec5  loadAlaCourseDetails\cf10 \strokec10 (\cf5 \strokec5 alaId\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cb1 \
-\cb3             \cf8 \strokec8 // Obt\'e9m refer\'eancias aos inputs diretamente do courseInfoDiv\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  courseNameInput \cf10 \strokec10 =\cf5 \strokec5  courseInfoDiv\cf10 \strokec10 .\cf5 \strokec5 querySelector\cf10 \strokec10 (\cf11 \strokec11 `#course-name-input-\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 `\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  startDateInput \cf10 \strokec10 =\cf5 \strokec5  courseInfoDiv\cf10 \strokec10 .\cf5 \strokec5 querySelector\cf10 \strokec10 (\cf11 \strokec11 `#start-date-input-\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 `\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  endDateInput \cf10 \strokec10 =\cf5 \strokec5  courseInfoDiv\cf10 \strokec10 .\cf5 \strokec5 querySelector\cf10 \strokec10 (\cf11 \strokec11 `#end-date-input-\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 `\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf8 \strokec8 // Preenche os valores dos inputs\cf5 \cb1 \strokec5 \
-\cb3             courseNameInput\cf10 \strokec10 .\cf5 \strokec5 value \cf10 \strokec10 =\cf5 \strokec5  alaCourseDetails\cf10 \strokec10 .\cf5 \strokec5 courseName \cf10 \strokec10 ||\cf5 \strokec5  \cf11 \strokec11 ''\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             startDateInput\cf10 \strokec10 .\cf5 \strokec5 value \cf10 \strokec10 =\cf5 \strokec5  alaCourseDetails\cf10 \strokec10 .\cf5 \strokec5 startDate \cf10 \strokec10 ||\cf5 \strokec5  \cf11 \strokec11 ''\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             endDateInput\cf10 \strokec10 .\cf5 \strokec5 value \cf10 \strokec10 =\cf5 \strokec5  alaCourseDetails\cf10 \strokec10 .\cf5 \strokec5 endDate \cf10 \strokec10 ||\cf5 \strokec5  \cf11 \strokec11 ''\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf8 \strokec8 // Adiciona event listeners para salvar os detalhes do curso desta ala\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  saveCurrentAlaCourseDetails \cf10 \strokec10 =\cf5 \strokec5  \cf10 \strokec10 ()\cf5 \strokec5  \cf10 \strokec10 =>\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 saveAlaCourseDetails\cf10 \strokec10 (\cf5 \strokec5 alaId\cf10 \strokec10 ,\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                     courseName\cf10 \strokec10 :\cf5 \strokec5  courseNameInput\cf10 \strokec10 .\cf5 \strokec5 value\cf10 \strokec10 .\cf5 \strokec5 trim\cf10 \strokec10 (),\cf5 \cb1 \strokec5 \
-\cb3                     startDate\cf10 \strokec10 :\cf5 \strokec5  startDateInput\cf10 \strokec10 .\cf5 \strokec5 value\cf10 \strokec10 ,\cf5 \cb1 \strokec5 \
-\cb3                     endDate\cf10 \strokec10 :\cf5 \strokec5  endDateInput\cf10 \strokec10 .\cf5 \strokec5 value\cb1 \
-\cb3                 \cf10 \strokec10 \});\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \};\cf5 \cb1 \strokec5 \
-\
-\cb3             courseNameInput\cf10 \strokec10 .\cf5 \strokec5 addEventListener\cf10 \strokec10 (\cf11 \strokec11 'blur'\cf10 \strokec10 ,\cf5 \strokec5  saveCurrentAlaCourseDetails\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             startDateInput\cf10 \strokec10 .\cf5 \strokec5 addEventListener\cf10 \strokec10 (\cf11 \strokec11 'change'\cf10 \strokec10 ,\cf5 \strokec5  saveCurrentAlaCourseDetails\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             endDateInput\cf10 \strokec10 .\cf5 \strokec5 addEventListener\cf10 \strokec10 (\cf11 \strokec11 'change'\cf10 \strokec10 ,\cf5 \strokec5  saveCurrentAlaCourseDetails\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\
-\cb3             \cf8 \strokec8 // Div para tornar a tabela responsiva\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  tableResponsiveDiv \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'div'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             tableResponsiveDiv\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'table-responsive'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             alaSection\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 tableResponsiveDiv\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  table \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'table'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             table\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  thead \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'thead'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  headerRow \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'tr'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  thNome \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'th'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             thNome\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'py-3 px-6 text-xs font-medium tracking-wider'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             thNome\cf10 \strokec10 .\cf5 \strokec5 textContent \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'Nome do Participante'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             headerRow\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 thNome\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf8 \strokec8 // Cria os cabe\'e7alhos para cada semana\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 for\cf5 \strokec5  \cf10 \strokec10 (\cf9 \strokec9 let\cf5 \strokec5  i \cf10 \strokec10 =\cf5 \strokec5  \cf14 \strokec14 1\cf10 \strokec10 ;\cf5 \strokec5  i \cf10 \strokec10 <=\cf5 \strokec5  \cf13 \strokec13 NUM_SEMANAS\cf10 \strokec10 ;\cf5 \strokec5  i\cf10 \strokec10 ++)\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  thSemana \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'th'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 thSemana\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'py-3 px-6 text-xs font-medium tracking-wider'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                 thSemana\cf10 \strokec10 .\cf5 \strokec5 textContent \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 `Semana \cf10 \strokec10 $\{\cf5 \strokec5 i\cf10 \strokec10 \}\cf11 \strokec11 `\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                 headerRow\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 thSemana\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3             \cf8 \strokec8 // Adiciona o cabe\'e7alho para a Porcentagem de Frequ\'eancia\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  thFrequencia \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'th'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             thFrequencia\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'py-3 px-6 text-xs font-medium tracking-wider'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             thFrequencia\cf10 \strokec10 .\cf5 \strokec5 textContent \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'Frequ\'eancia'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             headerRow\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 thFrequencia\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3             thead\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 headerRow\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             table\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 thead\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  tbody \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 createElement\cf10 \strokec10 (\cf11 \strokec11 'tbody'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             tbody\cf10 \strokec10 .\cf5 \strokec5 className \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 'bg-white divide-y divide-gray-200'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf8 \strokec8 // Cria e adiciona as linhas dos participantes\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 for\cf5 \strokec5  \cf10 \strokec10 (\cf9 \strokec9 let\cf5 \strokec5  i \cf10 \strokec10 =\cf5 \strokec5  \cf14 \strokec14 1\cf10 \strokec10 ;\cf5 \strokec5  i \cf10 \strokec10 <=\cf5 \strokec5  \cf13 \strokec13 NUM_PARTICIPANTS\cf10 \strokec10 ;\cf5 \strokec5  i\cf10 \strokec10 ++)\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  participantRow \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 await\cf5 \strokec5  createParticipantRow\cf10 \strokec10 (\cf5 \strokec5 alaId\cf10 \strokec10 ,\cf5 \strokec5  i\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 tbody\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 participantRow\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3             table\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 tbody\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             tableResponsiveDiv\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 table\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cb1 \
-\cb3             \cf9 \strokec9 return\cf5 \strokec5  alaSection\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /**\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf8 \cb3 \strokec8          * Gera a tela de boas-vindas com os links para cada ala e o acesso central.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          */\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3         \cf9 \strokec9 function\cf5 \strokec5  generateWelcomeScreen\cf10 \strokec10 ()\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  mainContentDiv \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 getElementById\cf10 \strokec10 (\cf11 \strokec11 'main-content'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             mainContentDiv\cf10 \strokec10 .\cf5 \strokec5 innerHTML \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 `\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf11 \cb3 \strokec11                 <div class="welcome-section">\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                     <h2>Bem-vindo \'e0 Planilha de Frequ\'eancia das Alas!</h2>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                     <p>Escolha uma op\'e7\'e3o para come\'e7ar:</p>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                     <ul class="link-list">\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                         <li><a href="?mode=admin">Acesso Central (Visualizar todas as Alas)</a></li>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                         \cf10 \strokec10 $\{\cf13 \strokec13 ALAS\cf10 \strokec10 .\cf5 \strokec5 map\cf10 \strokec10 (\cf5 \strokec5 alaName \cf10 \strokec10 =>\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3                             \cf9 \strokec9 const\cf5 \strokec5  alaId \cf10 \strokec10 =\cf5 \strokec5  alaName\cf10 \strokec10 .\cf5 \strokec5 replace\cf10 \strokec10 (\cf15 \strokec15 /[^a-zA-Z0-9]/\cf9 \strokec9 g\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 '-'\cf10 \strokec10 ).\cf5 \strokec5 toLowerCase\cf10 \strokec10 ();\cf5 \cb1 \strokec5 \
-\cb3                             \cf9 \strokec9 return\cf5 \strokec5  \cf11 \strokec11 `<li><a href="?ala=\cf10 \strokec10 $\{\cf5 \strokec5 alaId\cf10 \strokec10 \}\cf11 \strokec11 ">\cf10 \strokec10 $\{\cf5 \strokec5 alaName\cf10 \strokec10 \}\cf11 \strokec11  (Acesso e Edi\'e7\'e3o)</a></li>`\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                         \cf10 \strokec10 \}).\cf5 \strokec5 join\cf10 \strokec10 (\cf11 \strokec11 ''\cf10 \strokec10 )\}\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf11 \cb3 \strokec11                     </ul>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11                 </div>\cf5 \cb1 \strokec5 \
-\cf11 \cb3 \strokec11             `\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 /**\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf8 \cb3 \strokec8          * Fun\'e7\'e3o principal para inicializar o aplicativo.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          * Espera a autentica\'e7\'e3o do Firebase e, em seguida, constr\'f3i a interface do usu\'e1rio.\cf5 \cb1 \strokec5 \
-\cf8 \cb3 \strokec8          */\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3         \cf9 \strokec9 async\cf5 \strokec5  \cf9 \strokec9 function\cf5 \strokec5  initApp\cf10 \strokec10 ()\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 await\cf5 \strokec5  initializeFirebaseAndAuth\cf10 \strokec10 ();\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  urlParams \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 new\cf5 \strokec5  \cf13 \strokec13 URLSearchParams\cf10 \strokec10 (\cf5 \strokec5 window\cf10 \strokec10 .\cf5 \strokec5 location\cf10 \strokec10 .\cf5 \strokec5 search\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  alaParam \cf10 \strokec10 =\cf5 \strokec5  urlParams\cf10 \strokec10 .\cf9 \strokec9 get\cf10 \strokec10 (\cf11 \strokec11 'ala'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  modeParam \cf10 \strokec10 =\cf5 \strokec5  urlParams\cf10 \strokec10 .\cf9 \strokec9 get\cf10 \strokec10 (\cf11 \strokec11 'mode'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  mainContentDiv \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 getElementById\cf10 \strokec10 (\cf11 \strokec11 'main-content'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (!\cf5 \strokec5 mainContentDiv\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 console\cf10 \strokec10 .\cf5 \strokec5 error\cf10 \strokec10 (\cf11 \strokec11 "Elemento 'main-content' n\'e3o encontrado."\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 return\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf8 \strokec8 // Remove o bloco de curso global se ele existir (garante que n\'e3o haja duplicatas de vers\'f5es anteriores)\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 const\cf5 \strokec5  globalCourseInfoDiv \cf10 \strokec10 =\cf5 \strokec5  document\cf10 \strokec10 .\cf5 \strokec5 querySelector\cf10 \strokec10 (\cf11 \strokec11 '.mb-8.p-6.bg-gray-50.rounded-lg.shadow-inner'\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3             \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 globalCourseInfoDiv\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 globalCourseInfoDiv\cf10 \strokec10 .\cf5 \strokec5 remove\cf10 \strokec10 ();\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3             mainContentDiv\cf10 \strokec10 .\cf5 \strokec5 innerHTML \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 '<div class="loading-spinner mt-8"></div><p class="text-center text-gray-500 mt-4">Carregando...</p>'\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\
-\cb3             \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 modeParam \cf10 \strokec10 ===\cf5 \strokec5  \cf11 \strokec11 'admin'\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 mainContentDiv\cf10 \strokec10 .\cf5 \strokec5 innerHTML \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 ''\cf10 \strokec10 ;\cf5 \strokec5  \cf8 \strokec8 // Limpa o spinner\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 for\cf5 \strokec5  \cf10 \strokec10 (\cf9 \strokec9 const\cf5 \strokec5  alaName \cf9 \strokec9 of\cf5 \strokec5  \cf13 \strokec13 ALAS\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                     \cf9 \strokec9 const\cf5 \strokec5  alaSection \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 await\cf5 \strokec5  createAlaSectionElement\cf10 \strokec10 (\cf5 \strokec5 alaName\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                     mainContentDiv\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 alaSection\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 else\cf5 \strokec5  \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 alaParam\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 const\cf5 \strokec5  targetAlaName \cf10 \strokec10 =\cf5 \strokec5  \cf13 \strokec13 ALAS\cf10 \strokec10 .\cf5 \strokec5 find\cf10 \strokec10 (\cf5 \strokec5 name \cf10 \strokec10 =>\cf5 \strokec5  name\cf10 \strokec10 .\cf5 \strokec5 replace\cf10 \strokec10 (\cf15 \strokec15 /[^a-zA-Z0-9]/\cf9 \strokec9 g\cf10 \strokec10 ,\cf5 \strokec5  \cf11 \strokec11 '-'\cf10 \strokec10 ).\cf5 \strokec5 toLowerCase\cf10 \strokec10 ()\cf5 \strokec5  \cf10 \strokec10 ===\cf5 \strokec5  alaParam\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf9 \strokec9 if\cf5 \strokec5  \cf10 \strokec10 (\cf5 \strokec5 targetAlaName\cf10 \strokec10 )\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                     mainContentDiv\cf10 \strokec10 .\cf5 \strokec5 innerHTML \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 ''\cf10 \strokec10 ;\cf5 \strokec5  \cf8 \strokec8 // Limpa o spinner\cf5 \cb1 \strokec5 \
-\cb3                     \cf9 \strokec9 const\cf5 \strokec5  alaSection \cf10 \strokec10 =\cf5 \strokec5  \cf9 \strokec9 await\cf5 \strokec5  createAlaSectionElement\cf10 \strokec10 (\cf5 \strokec5 targetAlaName\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                     mainContentDiv\cf10 \strokec10 .\cf5 \strokec5 appendChild\cf10 \strokec10 (\cf5 \strokec5 alaSection\cf10 \strokec10 );\cf5 \cb1 \strokec5 \
-\cb3                 \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 else\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                     mainContentDiv\cf10 \strokec10 .\cf5 \strokec5 innerHTML \cf10 \strokec10 =\cf5 \strokec5  \cf11 \strokec11 `<p class="text-center text-red-500 mt-8">Ala "\cf10 \strokec10 $\{\cf5 \strokec5 alaParam\cf10 \strokec10 \}\cf11 \strokec11 " n\'e3o encontrada.</p>`\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3                     generateWelcomeScreen\cf10 \strokec10 ();\cf5 \strokec5  \cf8 \strokec8 // Mostra a tela de boas-vindas se a ala n\'e3o for encontrada\cf5 \cb1 \strokec5 \
-\cb3                 \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \strokec5  \cf9 \strokec9 else\cf5 \strokec5  \cf10 \strokec10 \{\cf5 \cb1 \strokec5 \
-\cb3                 generateWelcomeScreen\cf10 \strokec10 ();\cf5 \strokec5  \cf8 \strokec8 // Mostra a tela de boas-vindas por padr\'e3o\cf5 \cb1 \strokec5 \
-\cb3             \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\cb3         \cf10 \strokec10 \}\cf5 \cb1 \strokec5 \
-\
-\cb3         \cf8 \strokec8 // Inicia o aplicativo ap\'f3s o carregamento completo do DOM\cf5 \cb1 \strokec5 \
-\cb3         window\cf10 \strokec10 .\cf5 \strokec5 onload \cf10 \strokec10 =\cf5 \strokec5  initApp\cf10 \strokec10 ;\cf5 \cb1 \strokec5 \
-\cb3     \cf6 \strokec6 </\cf2 \strokec2 script\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf6 \cb3 \strokec6 </\cf2 \strokec2 body\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\cf6 \cb3 \strokec6 </\cf2 \strokec2 html\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
-\
-}
+        // Variáveis globais para as instâncias do Firebase e estado de autenticação
+        let app;
+        let db;
+        let auth;
+        let userId; // Armazena o ID do usuário autenticado
+        let isAuthReady = false; // Flag para indicar se a autenticação está pronta
+
+        // Expõe as funções do Firebase no objeto global 'window' para que o script principal possa acessá-las.
+        // Isso é necessário devido à forma como os módulos ES são tratados em scripts 'type="module"' e 'defer'.
+        window.firebase = {
+            initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged,
+            getFirestore, doc, setDoc, getDoc, collection, getDocs
+        };
+        window.isAuthReady = false; // Inicializa a flag de autenticação para o script principal
+    </script>
+    <style>
+        /* Estilos base do corpo e contêiner principal */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 1200px;
+        }
+
+        /* Estilo responsivo para tabelas: adiciona rolagem horizontal se o conteúdo for muito largo */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; /* Melhora a rolagem em dispositivos iOS */
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo da tabela */
+        table {
+            width: 100%;
+            min-width: 900px; /* Garante que a tabela tenha uma largura mínima para legibilidade */
+            border-collapse: collapse;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #4c51bf;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            white-space: nowrap; /* Impede quebras de linha nos cabeçalhos */
+        }
+        td {
+            background-color: #ffffff;
+            color: #4a5568;
+            font-size: 0.95rem;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background-color: #f7fafc;
+        }
+
+        /* Seções individuais das alas */
+        .ala-section {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* Sombra mais pronunciada */
+            margin-bottom: 2rem;
+        }
+        .ala-title {
+            color: #4c51bf;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        /* Campo de entrada para o nome do participante */
+        .participant-name-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 0.375rem;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+            font-size: 0.95rem;
+            color: #4a5568;
+        }
+
+        /* Campos de entrada para curso e datas */
+        .course-info-input {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 0.375rem;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+            font-size: 1rem;
+            color: #4a5568;
+            margin-top: 0.5rem;
+        }
+        .course-info-label {
+            display: block;
+            margin-top: 1rem;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+
+        /* Checkbox de presença */
+        .attendance-checkbox {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        /* Indicador de carregamento (spinner) */
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4c51bf;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .welcome-section {
+            background-color: #e0f2f7;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
+        }
+        .welcome-section h2 {
+            font-size: 2rem;
+            color: #2c5282;
+            margin-bottom: 1rem;
+        }
+        .welcome-section p {
+            font-size: 1.1rem;
+            color: #4a5568;
+            margin-bottom: 1.5rem;
+        }
+        .welcome-section .link-list {
+            list-style: none;
+            padding: 0;
+        }
+        .welcome-section .link-list li {
+            margin-bottom: 0.75rem;
+        }
+        .welcome-section .link-list a {
+            display: inline-block;
+            background-color: #667eea;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .welcome-section .link-list a:hover {
+            background-color: #5a67d8;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-8">
+    <div class="container mx-auto p-4 bg-white rounded-lg shadow-xl my-8">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-center text-indigo-700 mb-8 mt-4">
+            Planilha de Frequência - Alas de São Paulo
+        </h1>
+        <p class="text-lg text-gray-600 text-center mb-4">
+            Acompanhe a frequência dos participantes de cada ala durante 12 semanas.
+            Marque a caixa para registrar a presença de cada participante.
+            Você pode editar os nomes dos participantes diretamente na tabela.
+        </p>
+        <p id="user-id-display" class="text-sm text-gray-500 text-center mb-8">
+            Carregando ID do usuário...
+        </p>
+
+        <div id="main-content">
+            <!-- Conteúdo será carregado aqui dinamicamente -->
+        </div>
+    </div>
+
+    <script type="module">
+        // Constants for configuration
+        const ALAS = [
+            "Ala Aracati (SP)", "Ala Chácara Santana", "Ala Figueira Grande",
+            "Ala Guarapiranga", "Ala Horizonte Azul", "Ala Jardim Capela",
+            "Ala Jardim Jacira", "Ala Jardim Ângela", "Ala Ranieri",
+            "Ala Riviera Paulista"
+        ];
+        const NUM_PARTICIPANTS = 20;
+        const NUM_SEMANAS = 12;
+
+        // Firebase instances (will be initialized after authentication)
+        let app;
+        let db;
+        let auth;
+        let userId;
+
+        /**
+         * Inicializa o Firebase e lida com a autenticação do usuário.
+         * Garante que o userId esteja disponível antes de interagir com o Firestore.
+         */
+        async function initializeFirebaseAndAuth() {
+            try {
+                // As variáveis __app_id, __firebase_config, __initial_auth_token são fornecidas pelo ambiente Canvas
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+                app = window.firebase.initializeApp(firebaseConfig);
+                db = window.firebase.getFirestore(app);
+                auth = window.firebase.getAuth(app);
+
+                return new Promise(resolve => {
+                    window.firebase.onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            userId = user.uid;
+                            document.getElementById('user-id-display').textContent = `Seu ID de Usuário: ${userId}`;
+                            window.isAuthReady = true; // Sinaliza que a autenticação está pronta
+                            resolve();
+                        } else {
+                            try {
+                                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                                    await window.firebase.signInWithCustomToken(auth, __initial_auth_token);
+                                } else {
+                                    await window.firebase.signInAnonymously(auth);
+                                }
+                                // onAuthStateChanged será acionado novamente com o usuário autenticado
+                            } catch (error) {
+                                console.error("Erro de autenticação:", error);
+                                document.getElementById('user-id-display').textContent = `Erro de autenticação: ${error.message}`;
+                                userId = crypto.randomUUID(); // Fallback para um ID aleatório se a autenticação falhar
+                                window.isAuthReady = true;
+                                resolve();
+                            }
+                        }
+                    });
+                });
+            } catch (e) {
+                console.error("Erro ao inicializar o Firebase:", e);
+                document.getElementById('user-id-display').textContent = 'Erro ao inicializar o Firebase.';
+            }
+        }
+
+        /**
+         * Salva o estado de frequência e o nome de um participante no Firestore.
+         * Agora salva na coleção 'public_alas_data'.
+         * @param {string} alaId - ID sanitizado da ala.
+         * @param {string} participantId - ID do participante.
+         * @param {Object} dataToSave - Objeto contendo o nome e o array de frequência. Ex: { name: "Nome", attendance: [true, false, ...] }
+         */
+        async function saveParticipantData(alaId, participantId, dataToSave) {
+            if (!window.isAuthReady || !userId) {
+                console.warn("Autenticação não pronta ou userId ausente. Não é possível salvar dados.");
+                return;
+            }
+            try {
+                const participantDocRef = window.firebase.doc(db, `artifacts/${__app_id}/public_alas_data/${alaId}/participants`, participantId);
+                await window.firebase.setDoc(participantDocRef, dataToSave, { merge: true });
+                
+                // Atualiza a porcentagem de frequência na linha do participante instantaneamente
+                const percentageSpan = document.getElementById(`percentage-${alaId}-${participantId}`);
+                if (percentageSpan) {
+                    percentageSpan.textContent = calculateAttendancePercentage(dataToSave.attendance, NUM_SEMANAS);
+                }
+            } catch (e) {
+                console.error("Erro ao salvar dados do participante:", e);
+            }
+        }
+
+        /**
+         * Carrega o estado de frequência e o nome de um participante do Firestore.
+         * Agora carrega da coleção 'public_alas_data'.
+         * @param {string} alaId - ID sanitizado da ala.
+         * @param {string} participantId - ID do participante.
+         * @returns {Promise<Object>} - Objeto contendo o nome e o array de frequência, ou um objeto padrão se não houver dados.
+         */
+        async function loadParticipantData(alaId, participantId) {
+            if (!window.isAuthReady || !userId) {
+                console.warn("Autenticação não pronta ou userId ausente. Não é possível carregar dados.");
+                return { name: `Participante ${parseInt(participantId.replace('participante-', ''))}`, attendance: Array(NUM_SEMANAS).fill(false) };
+            }
+            try {
+                const participantDocRef = window.firebase.doc(db, `artifacts/${__app_id}/public_alas_data/${alaId}/participants`, participantId);
+                const docSnap = await window.firebase.getDoc(participantDocRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    return {
+                        name: data.name || `Participante ${parseInt(participantId.replace('participante-', ''))}`,
+                        attendance: data.attendance || Array(NUM_SEMANAS).fill(false)
+                    };
+                }
+                return { name: `Participante ${parseInt(participantId.replace('participante-', ''))}`, attendance: Array(NUM_SEMANAS).fill(false) };
+            } catch (e) {
+                console.error("Erro ao carregar dados do participante:", e);
+                return { name: `Participante ${parseInt(participantId.replace('participante-', ''))}`, attendance: Array(NUM_SEMANAS).fill(false) };
+            }
+        }
+
+        /**
+         * Calcula a porcentagem de frequência de um participante.
+         * @param {Array<boolean>} attendanceArray - Array booleano de presença.
+         * @param {number} totalWeeks - Número total de semanas.
+         * @returns {string} - Porcentagem formatada (ex: "75.00%").
+         */
+        function calculateAttendancePercentage(attendanceArray, totalWeeks) {
+            if (totalWeeks === 0) return "0.00%";
+            const presentCount = attendanceArray.filter(isPresent => isPresent).length;
+            const percentage = (presentCount / totalWeeks) * 100;
+            return percentage.toFixed(2) + "%";
+        }
+
+        /**
+         * Salva as configurações de curso e datas para uma ala específica no Firestore.
+         * Agora salva na coleção 'public_alas_data'.
+         * @param {string} alaId - ID sanitizado da ala.
+         * @param {Object} courseDetails - Objeto contendo nome do curso, data de início e data de fim.
+         */
+        async function saveAlaCourseDetails(alaId, courseDetails) {
+            if (!window.isAuthReady || !userId) {
+                console.warn("Autenticação não pronta ou userId ausente. Não é possível salvar detalhes do curso da ala.");
+                return;
+            }
+            try {
+                const alaDetailsDocRef = window.firebase.doc(db, `artifacts/${__app_id}/public_alas_data/${alaId}/details`, 'course_info');
+                await window.firebase.setDoc(alaDetailsDocRef, {
+                    courseName: courseDetails.courseName,
+                    startDate: courseDetails.startDate,
+                    endDate: courseDetails.endDate
+                }, { merge: true });
+                // console.log(`Detalhes do curso para ala ${alaId} salvos com sucesso.`);
+            } catch (e) {
+                console.error(`Erro ao salvar detalhes do curso para ala ${alaId}:`, e);
+            }
+        }
+
+        /**
+         * Carrega as configurações de curso e datas para uma ala específica do Firestore.
+         * Agora carrega da coleção 'public_alas_data'.
+         * @param {string} alaId - ID sanitizado da ala.
+         * @returns {Promise<Object>} - Objeto contendo nome do curso, data de início e data de fim, ou um objeto vazio se não houver dados.
+         */
+        async function loadAlaCourseDetails(alaId) {
+            if (!window.isAuthReady || !userId) {
+                console.warn("Autenticação não pronta ou userId ausente. Não é possível carregar detalhes do curso da ala.");
+                return {};
+            }
+            try {
+                const alaDetailsDocRef = window.firebase.doc(db, `artifacts/${__app_id}/public_alas_data/${alaId}/details`, 'course_info');
+                const docSnap = await window.firebase.getDoc(alaDetailsDocRef);
+                if (docSnap.exists()) {
+                    return docSnap.data();
+                }
+                return {};
+            } catch (e) {
+                console.error(`Erro ao carregar detalhes do curso para ala ${alaId}:`, e);
+                return {};
+            }
+        }
+
+        /**
+         * Cria e popula uma linha para um participante na tabela de frequência.
+         * @param {string} alaId - ID sanitizado da ala.
+         * @param {number} participantNum - Número do participante (1-20).
+         * @returns {HTMLTableRowElement} A linha da tabela HTML.
+         */
+        async function createParticipantRow(alaId, participantNum) {
+            const participantId = `participante-${participantNum}`;
+            const participantRow = document.createElement('tr');
+            const tdNome = document.createElement('td');
+            tdNome.className = 'py-4 px-6 whitespace-nowrap';
+            participantRow.appendChild(tdNome);
+
+            // Carrega os dados do participante (nome e frequência)
+            const data = await loadParticipantData(alaId, participantId);
+            let currentName = data.name;
+            let attendanceData = data.attendance;
+            const defaultParticipantName = `Participante ${participantNum}`;
+
+            // Input para o nome do participante (editável)
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.className = 'participant-name-input';
+            nameInput.value = currentName === defaultParticipantName ? '' : currentName;
+            nameInput.placeholder = defaultParticipantName;
+            tdNome.appendChild(nameInput);
+
+            // Adiciona evento para salvar o nome ao sair do foco
+            nameInput.addEventListener('blur', () => {
+                const newName = nameInput.value.trim();
+                const nameToSave = newName === '' ? defaultParticipantName : newName;
+
+                if (nameToSave !== currentName) {
+                    currentName = nameToSave;
+                    saveParticipantData(alaId, participantId, { name: currentName, attendance: attendanceData });
+                }
+            });
+
+            // Cria células para os checkboxes de frequência
+            for (let j = 0; j < NUM_SEMANAS; j++) {
+                const tdCheckbox = document.createElement('td');
+                tdCheckbox.className = 'py-4 px-6 whitespace-nowrap';
+                const checkboxId = `${alaId}-${participantId}-semana-${j + 1}`;
+                tdCheckbox.innerHTML = `
+                    <div class="attendance-checkbox">
+                        <input type="checkbox"
+                               id="${checkboxId}"
+                               name="${checkboxId}"
+                               class="form-checkbox h-5 w-5 text-indigo-600 rounded-md focus:ring-indigo-500"
+                               ${attendanceData[j] ? 'checked' : ''}>
+                    </div>
+                `;
+                participantRow.appendChild(tdCheckbox);
+
+                // Adiciona o evento de mudança para salvar a frequência no Firestore
+                const checkbox = tdCheckbox.querySelector(`#${checkboxId}`);
+                checkbox.addEventListener('change', () => {
+                    attendanceData[j] = checkbox.checked;
+                    saveParticipantData(alaId, participantId, { name: currentName, attendance: attendanceData });
+                });
+            }
+
+            // Adiciona a célula para a porcentagem de frequência
+            const tdPercentage = document.createElement('td');
+            tdPercentage.className = 'py-4 px-6 whitespace-nowrap font-semibold';
+            const percentageSpan = document.createElement('span');
+            percentageSpan.id = `percentage-${alaId}-${participantId}`; // ID para atualização dinâmica
+            percentageSpan.textContent = calculateAttendancePercentage(attendanceData, NUM_SEMANAS);
+            tdPercentage.appendChild(percentageSpan);
+            participantRow.appendChild(tdPercentage);
+
+            return participantRow;
+        }
+
+        /**
+         * Cria toda a seção HTML para uma ala específica, incluindo a tabela de frequência
+         * e os campos de informação do curso.
+         * @param {string} alaName - O nome da ala.
+         * @returns {HTMLElement} A seção da ala completa.
+         */
+        async function createAlaSectionElement(alaName) {
+            const alaId = alaName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase(); // Sanitiza o nome da ala para usar como ID
+
+            const alaSection = document.createElement('div');
+            alaSection.className = 'ala-section mb-12';
+
+            const alaTitle = document.createElement('h2');
+            alaTitle.className = 'ala-title mb-6 pb-2 border-b-2 border-indigo-400';
+            alaTitle.textContent = alaName;
+            alaSection.appendChild(alaTitle);
+
+            // Novos campos para Nome do Curso e Datas (dentro de cada ala)
+            const courseInfoDiv = document.createElement('div');
+            courseInfoDiv.className = 'mb-8 p-6 bg-gray-50 rounded-lg shadow-inner';
+            courseInfoDiv.innerHTML = `
+                <label for="course-name-input-${alaId}" class="course-info-label">Nome do Curso:</label>
+                <input type="text" id="course-name-input-${alaId}" class="course-info-input" placeholder="Ex: Escola Dominical - Doutrina e Convênios">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label for="start-date-input-${alaId}" class="course-info-label">Data de Início:</label>
+                        <input type="date" id="start-date-input-${alaId}" class="course-info-input">
+                    </div>
+                    <div>
+                        <label for="end-date-input-${alaId}" class="course-info-label">Data de Fim:</label>
+                        <input type="date" id="end-date-input-${alaId}" class="course-info-input">
+                    </div>
+                </div>
+            `;
+            alaSection.appendChild(courseInfoDiv); // ANEXA o div ao DOM antes de tentar preencher os valores
+
+            // Carrega os detalhes do curso para esta ala específica
+            const alaCourseDetails = await loadAlaCourseDetails(alaId);
+            
+            // Obtém referências aos inputs diretamente do courseInfoDiv
+            const courseNameInput = courseInfoDiv.querySelector(`#course-name-input-${alaId}`);
+            const startDateInput = courseInfoDiv.querySelector(`#start-date-input-${alaId}`);
+            const endDateInput = courseInfoDiv.querySelector(`#end-date-input-${alaId}`);
+
+            // Preenche os valores dos inputs
+            courseNameInput.value = alaCourseDetails.courseName || '';
+            startDateInput.value = alaCourseDetails.startDate || '';
+            endDateInput.value = alaCourseDetails.endDate || '';
+
+            // Adiciona event listeners para salvar os detalhes do curso desta ala
+            const saveCurrentAlaCourseDetails = () => {
+                saveAlaCourseDetails(alaId, {
+                    courseName: courseNameInput.value.trim(),
+                    startDate: startDateInput.value,
+                    endDate: endDateInput.value
+                });
+            };
+
+            courseNameInput.addEventListener('blur', saveCurrentAlaCourseDetails);
+            startDateInput.addEventListener('change', saveCurrentAlaCourseDetails);
+            endDateInput.addEventListener('change', saveCurrentAlaCourseDetails);
+
+
+            // Div para tornar a tabela responsiva
+            const tableResponsiveDiv = document.createElement('div');
+            tableResponsiveDiv.className = 'table-responsive';
+            alaSection.appendChild(tableResponsiveDiv);
+
+            const table = document.createElement('table');
+            table.className = 'min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden';
+
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            const thNome = document.createElement('th');
+            thNome.className = 'py-3 px-6 text-xs font-medium tracking-wider';
+            thNome.textContent = 'Nome do Participante';
+            headerRow.appendChild(thNome);
+
+            // Cria os cabeçalhos para cada semana
+            for (let i = 1; i <= NUM_SEMANAS; i++) {
+                const thSemana = document.createElement('th');
+                thSemana.className = 'py-3 px-6 text-xs font-medium tracking-wider';
+                thSemana.textContent = `Semana ${i}`;
+                headerRow.appendChild(thSemana);
+            }
+            // Adiciona o cabeçalho para a Porcentagem de Frequência
+            const thFrequencia = document.createElement('th');
+            thFrequencia.className = 'py-3 px-6 text-xs font-medium tracking-wider';
+            thFrequencia.textContent = 'Frequência';
+            headerRow.appendChild(thFrequencia);
+
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            tbody.className = 'bg-white divide-y divide-gray-200';
+
+            // Cria e adiciona as linhas dos participantes
+            for (let i = 1; i <= NUM_PARTICIPANTS; i++) {
+                const participantRow = await createParticipantRow(alaId, i);
+                tbody.appendChild(participantRow);
+            }
+            table.appendChild(tbody);
+            tableResponsiveDiv.appendChild(table);
+            
+            return alaSection;
+        }
+
+        /**
+         * Gera a tela de boas-vindas com os links para cada ala e o acesso central.
+         */
+        function generateWelcomeScreen() {
+            const mainContentDiv = document.getElementById('main-content');
+            mainContentDiv.innerHTML = `
+                <div class="welcome-section">
+                    <h2>Bem-vindo à Planilha de Frequência das Alas!</h2>
+                    <p>Escolha uma opção para começar:</p>
+                    <ul class="link-list">
+                        <li><a href="?mode=admin">Acesso Central (Visualizar todas as Alas)</a></li>
+                        ${ALAS.map(alaName => {
+                            const alaId = alaName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+                            return `<li><a href="?ala=${alaId}">${alaName} (Acesso e Edição)</a></li>`;
+                        }).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        /**
+         * Função principal para inicializar o aplicativo.
+         * Espera a autenticação do Firebase e, em seguida, constrói a interface do usuário.
+         */
+        async function initApp() {
+            await initializeFirebaseAndAuth();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const alaParam = urlParams.get('ala');
+            const modeParam = urlParams.get('mode');
+
+            const mainContentDiv = document.getElementById('main-content');
+            if (!mainContentDiv) {
+                console.error("Elemento 'main-content' não encontrado.");
+                return;
+            }
+
+            // Remove o bloco de curso global se ele existir (garante que não haja duplicatas de versões anteriores)
+            const globalCourseInfoDiv = document.querySelector('.mb-8.p-6.bg-gray-50.rounded-lg.shadow-inner');
+            if (globalCourseInfoDiv) {
+                globalCourseInfoDiv.remove();
+            }
+
+            mainContentDiv.innerHTML = '<div class="loading-spinner mt-8"></div><p class="text-center text-gray-500 mt-4">Carregando...</p>';
+
+            if (modeParam === 'admin') {
+                mainContentDiv.innerHTML = ''; // Limpa o spinner
+                for (const alaName of ALAS) {
+                    const alaSection = await createAlaSectionElement(alaName);
+                    mainContentDiv.appendChild(alaSection);
+                }
+            } else if (alaParam) {
+                const targetAlaName = ALAS.find(name => name.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase() === alaParam);
+                if (targetAlaName) {
+                    mainContentDiv.innerHTML = ''; // Limpa o spinner
+                    const alaSection = await createAlaSectionElement(targetAlaName);
+                    mainContentDiv.appendChild(alaSection);
+                } else {
+                    mainContentDiv.innerHTML = `<p class="text-center text-red-500 mt-8">Ala "${alaParam}" não encontrada.</p>`;
+                    generateWelcomeScreen(); // Mostra a tela de boas-vindas se a ala não for encontrada
+                }
+            } else {
+                generateWelcomeScreen(); // Mostra a tela de boas-vindas por padrão
+            }
+        }
+
+        // Inicia o aplicativo após o carregamento completo do DOM
+        window.onload = initApp;
+    </script>
+</body>
+</html>
